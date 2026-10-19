@@ -1,0 +1,29 @@
+Backport for: vLLM a5a30471ff2b + iIIusi0n qwen38-ple-ssd.patch (sha256 09c4e13f)
+              + 2dameneko 56e1347 patches/apply.sh (verify.sh OK)
+Apply order : 01 -> 02 -> 03 -> 04, each on top of the previous one.
+Apply with  : git apply -p1 --check <patch> && git apply -p1 <patch>   (run in the tree root)
+Patch 01: vllm-project/vllm#55601 (merged 2026-10-07, 3d6853b32c7c)
+  https://github.com/vllm-project/vllm/pull/55601
+  [Bugfix] Seed hybrid mamba state index with mamba_block_size on prefix-cache hits
+  Clean cherry-pick (src only; the unit test hunk is left out).
+---------------------------------------------------------------------------
+
+diff --git a/vllm/v1/worker/gpu/model_states/mamba_hybrid.py b/vllm/v1/worker/gpu/model_states/mamba_hybrid.py
+index bfad8a1b..e213f744 100644
+--- a/vllm/v1/worker/gpu/model_states/mamba_hybrid.py
++++ b/vllm/v1/worker/gpu/model_states/mamba_hybrid.py
+@@ -118,8 +118,13 @@ class MambaHybridModelState(DefaultModelState):
+         self.num_accepted_tokens_gpu[req_index].fill_(1)
+         if self._align_mode:
+             # Seed the running state block from the resumed/prefilled position.
++            # The column is in mamba blocks. cache_config.block_size is the
++            # min over prefix-cacheable groups, so a drafter group with its own
++            # smaller block (e.g. DFlash) pulls it below mamba_block_size.
++            mamba_block_size = self.cache_config.mamba_block_size
++            assert mamba_block_size is not None
+             self._mamba_state_idx_gpu[req_index].fill_(
+-                (new_req_data.num_computed_tokens - 1) // self.cache_config.block_size
++                (new_req_data.num_computed_tokens - 1) // mamba_block_size
+             )
+ 
+     def _get_mamba_group_info(

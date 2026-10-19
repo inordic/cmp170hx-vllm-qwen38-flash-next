@@ -1,0 +1,13 @@
+[Unit]
+Description=CMP 170HX 01:00.0 + 02:00.0 (both 300 W VBIOS 92.00.6D since 2026-10-14): power limit 300 W
+After=nvidia-persistenced.service
+Wants=nvidia-persistenced.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nvidia-smi -i 00000000:01:00.0 -pl 300
+ExecStart=/usr/bin/nvidia-smi -i 00000000:02:00.0 -pl 300
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

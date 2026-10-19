@@ -1,0 +1,75 @@
+diff --git a/src/prefill/prefill.cpp b/src/prefill/prefill.cpp
+index 4e03dc8..e66b0d7 100644
+--- a/src/prefill/prefill.cpp
++++ b/src/prefill/prefill.cpp
+@@ -2002,7 +2002,20 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
+     // layer split: a prompt of one chunk runs the stages one after the other, so the next stage's GPU idles while
+     // this one reads; it streams and computes a share of this stage's experts then (set_stage_helper), in the
+     // place of a --peer-device peer, and gives the stage back its own buffers when the run ends
+-    const bool single_chunk = hand_in_ == nullptr ? n <= m.T : single_chunk_;
++    // STRATA_PF_SPLIT_PARTS=P (opt-in): on the first stage of a layer split, read a prompt in about P chunks
++    // (ceil(n / P) rounded up to 256, at least STRATA_PF_SPLIT_MIN = 2048, at most the buffers' m.T), so a prompt
++    // shorter than one full chunk still flows through the stages as a pipeline instead of one stage at a time.
++    // Long prompts keep full m.T chunks.  Unset or 0: the fixed m.T chunks as before.
++    static const int64_t split_parts = [] { const char* e = std::getenv("STRATA_PF_SPLIT_PARTS"); return e ? (int64_t) std::atoll(e) : (int64_t) 0; }();
++    static const int64_t split_min = [] { const char* e = std::getenv("STRATA_PF_SPLIT_MIN"); return e ? std::max<int64_t>(256, std::atoll(e)) : (int64_t) 2048; }();
++    const int64_t TC = [&]() -> int64_t {
++        if (split_parts <= 0 || next_ == nullptr || hand_in_ != nullptr) return m.T;
++        const int64_t per = ((n + split_parts - 1) / split_parts + 255) / 256 * 256;
++        return std::min<int64_t>(m.T, std::max<int64_t>(split_min, per));
++    }();
++    if (split_parts > 0 && next_ != nullptr && hand_in_ == nullptr && std::getenv("STRATA_PREFILL_TIMING"))
++        std::fprintf(stderr, "strata prefill: split chunk %lld of %lld (buffers %lld)\n", (long long) TC, (long long) n, (long long) m.T);
++    const bool single_chunk = hand_in_ == nullptr ? n <= TC : single_chunk_;
+     const bool helped = single_chunk && bind_stage_helper(n);
+     if (helped) std::swap(m.pp, m.help_pp);
+     struct HelpScope {
+@@ -2038,8 +2051,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
+                            (ss.ple.w.key_bf16 != nullptr || ss.ple.w.key_native_data != nullptr) &&
+                            m.region_bytes / ((uint64_t) (3 * strata::kernels::NG_HC_DIM + N + 4) * 4 + (uint64_t) N * 2 + 4096) >= 64;
+     const int32_t prev0[2] = {prev[0], prev[1]};
+-    auto ple_gather = [&m, &ss, tokens, n, prev0](int64_t c0, int buf, std::string& e) -> bool {
+-        const int64_t T = std::min(m.T, n - c0);
++    auto ple_gather = [&m, &ss, tokens, n, prev0, TC](int64_t c0, int buf, std::string& e) -> bool {
++        const int64_t T = std::min(TC, n - c0);
+         auto at = [&](int64_t i) { return i < 2 ? prev0[i] : (int32_t) tokens[i - 2]; };   // prev0, then the tokens
+         int32_t pv[2] = {at(c0), at(c0 + 1)};
+         for (int64_t t = 0; t < T; ++t) {
+@@ -2055,10 +2068,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
+     std::future<bool> ple_next;             // declared after everything it reads: an early return waits for it
+     int ple_buf = 0;
+ 
+-    for (int64_t c0 = 0; c0 < n; c0 += m.T) {
++    for (int64_t c0 = 0; c0 < n; c0 += TC) {
+         if (should_stop && should_stop()) { err = "cancelled"; return false; }
+         if (std::getenv("STRATA_TRACE")) { std::fprintf(stderr, "strata trace: prompt chunk %lld of %lld\n", (long long) c0, (long long) n); std::fflush(stderr); }
+-        const int64_t T = std::min(m.T, n - c0), p0 = pos0 + c0;
++        const int64_t T = std::min(TC, n - c0), p0 = pos0 + c0;
+         core::progress_at("reading the prompt (batched): preparing the chunk from token", p0);   // #251
+         ++stats_.chunks;
+         pt.mark(kPfStart, cs);
+@@ -2140,13 +2153,13 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
+                 err = std::string("prefill: the PLE rows' upload failed: ") + cudaGetErrorString(cudaGetLastError());
+                 return false;
+             }
+-            if (c0 + m.T < n) {
++            if (c0 + TC < n) {
+                 // the other buffer's upload (a chunk ago) is done before the SSD thread refills it
+                 if (cudaEventSynchronize(m.ple_copied[ple_buf ^ 1]) != cudaSuccess) {
+                     err = std::string("prefill: the PLE rows' upload failed: ") + cudaGetErrorString(cudaGetLastError());
+                     return false;
+                 }
+-                ple_next = std::async(std::launch::async, [&ple_gather, &ple_next_err, c1 = c0 + m.T, b = ple_buf ^ 1] {
++                ple_next = std::async(std::launch::async, [&ple_gather, &ple_next_err, c1 = c0 + TC, b = ple_buf ^ 1] {
+                     return ple_gather(c1, b, ple_next_err);
+                 });
+             }
+@@ -3975,7 +3988,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
+             for (float v : h) { c += !std::isfinite(v); if (std::isfinite(v)) mx = std::max(mx, (double) std::fabs(v)); }
+             std::fprintf(stderr, " %lld non-finite (max |x| %.3g)", (long long) c, mx);
+         };
+-        const int64_t last = (n - 1) % m.T;
++        const int64_t last = (n - 1) % TC;
+         std::fprintf(stderr, "strata dbg: prompt end: last residual row");
+         bad(m.R + last * D, D);
+         if (ss.ple.ready()) { std::fprintf(stderr, "; PLE history"); bad(ss.ple.hist, (int64_t) strata::kernels::NG_HIST * strata::kernels::NG_HC_DIM); }

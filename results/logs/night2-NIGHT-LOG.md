@@ -1,0 +1,92 @@
+# Night 2 (2026-10-14/15): quality + performance - log
+/dev/mapper/pve-vm--232--disk--0  788G  533G  223G  71% /
+- 17:10:29 UTC [gputest] start: stopping production vLLM
+- 17:10:47 UTC [gputest] gpu1 run 1 rc=0: BW_H2D_GBs=1.66 BW_D2H_GBs=3.25 BW_TRIAD_FREE_MIB=64604 BW_TRIAD_GBs=1548.86 BW_TRIAD_BUF_MIB=1024 RESULT=PASS 
+- 17:11:02 UTC [gputest] gpu1 run 2 rc=0: BW_H2D_GBs=3.29 BW_D2H_GBs=3.32 BW_TRIAD_FREE_MIB=64604 BW_TRIAD_GBs=1592.77 BW_TRIAD_BUF_MIB=1024 RESULT=PASS 
+- 17:11:18 UTC [gputest] gpu1 run 3 rc=0: BW_H2D_GBs=3.29 BW_D2H_GBs=3.34 BW_TRIAD_FREE_MIB=64604 BW_TRIAD_GBs=1596.82 BW_TRIAD_BUF_MIB=1024 RESULT=PASS 
+- 17:11:34 UTC [gputest] gpu0 run 1 rc=0: BW_H2D_GBs=3.27 BW_D2H_GBs=3.31 BW_TRIAD_FREE_MIB=64604 BW_TRIAD_GBs=1605.78 BW_TRIAD_BUF_MIB=1024 RESULT=PASS 
+- 17:11:49 UTC [gputest] gpu0 run 2 rc=0: BW_H2D_GBs=3.29 BW_D2H_GBs=3.29 BW_TRIAD_FREE_MIB=64604 BW_TRIAD_GBs=1596.82 BW_TRIAD_BUF_MIB=1024 RESULT=PASS 
+- 17:12:05 UTC [gputest] gpu0 run 3 rc=0: BW_H2D_GBs=3.25 BW_D2H_GBs=3.34 BW_TRIAD_FREE_MIB=64604 BW_TRIAD_GBs=1596.82 BW_TRIAD_BUF_MIB=1024 RESULT=PASS 
+- 17:12:05 UTC [gputest] max temps: GPU0 max 32 C; GPU1 max 30 C
+- 17:12:05 UTC [gputest] DONE
+- 17:12:05 UTC phase 1 start
+- 17:15:56 UTC [E0] started: GPU KV cache size: 878,536 tokens, attention block size to 1600, load 35.95 s
+- 17:17:16 UTC [E0] func: 9/8 pass, FUNC ALL PASS
+- 17:17:27 UTC [E0] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.15s TTFT  0.18s , (80%)
+- 17:18:50 UTC [E0] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.30s 3,445 151.5; 4,108: 0.80s 5,112 145.4; 8,204: 1.46s 5,603 146.4; 16,397: 2.39s 6,852 146.2; 32,780: 5.35s 6,123 144.1; 
+- 17:20:36 UTC [E0] long (prompt: TTFT, prefill tok/s): 65,550: 10.26s 6,393; 131,088: 22.11s 5,936; 
+- 17:21:32 UTC [E0] code decode:  decode tok/s median 168.2 (min 161.7, max 177.9) | mean acceptance length 3.08 
+- 17:24:34 UTC [E0] code-edit decode:  code edit, thinking off | decode tok/s median 218.8 (min 217.4, max 220.3) ; code edit, thinking low | decode tok/s median 211.2 (min 210.2, max 214.4) ;
+- 17:28:02 UTC [E0] random-token method (prompt: latency, tok/s): 2,048: 0.77s 2,674; 8,192: 2.03s 4,026; 32,768: 8.18s 4,005; 131,072: 42.56s 3,080; 
+- 17:30:05 UTC [E0] conc  u8-1024 | 8 users | 352.9 tok/s total | 170 req | TTFT med 0.39 s p95 0.75 s | tg/stream 51.6 | errors 0 |
+- 17:32:10 UTC [E0] conc  u16-1024 | 16 users | 457.6 tok/s total | 226 req | TTFT med 0.48 s p95 0.95 s | tg/stream 31.9 | errors 0 |
+- 17:34:44 UTC [E0] conc  mixed | 5 users | 150.1 tok/s total | 92 req | TTFT med 0.23 s p95 6.26 s | tg/stream 32.2 | errors 0 | agent TTFT med 5.93 s | chat TTFT med 0.23 s p95 2.3 s |
+- 17:54:46 UTC [E0] SOAK 20 min: 896 requests, errors 0, wrong answers 6 (facts 629/629 correct, tool calls 261/267), overall 896 req, TTFT med 0.97 s max 11.8 s, decode med 112 tok/s, wrong/failed 6 (tool); end vLLM RSS 12.1 GiB, GPU mem/temp 60824, 59 | 60790, 53 |
+- 17:54:46 UTC [E0] MTP mean acceptance 3.34 (205 samples); GPU busy clocks: GPU0 SM 1440 MHz, 264 W, max 78 C; GPU1 SM 1470 MHz, 161 W, max 69 C
+- 17:58:48 UTC [E1] started: GPU KV cache size: 878,536 tokens, attention block size to 1600, load 34.05 s
+- 18:00:08 UTC [E1] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.33s 3,115 153.9; 4,108: 0.93s 4,443 142.9; 8,204: 1.53s 5,344 138.6; 16,397: 2.36s 6,952 150.4; 32,781: 4.25s 7,708 152.0; 
+- 18:01:37 UTC [E1] long (prompt: TTFT, prefill tok/s): 65,550: 10.75s 6,506; 131,088: 16.38s 8,041; 
+- 18:02:35 UTC [E1] code decode:  decode tok/s median 167.1 (min 146.4, max 179.9) | mean acceptance length 3.04 
+- 18:02:35 UTC [E1] MTP mean acceptance 2.85 (18 samples); GPU busy clocks: GPU0 SM 1455 MHz, 201 W, max 75 C; GPU1 SM 1470 MHz, 139 W, max 67 C
+- 18:06:41 UTC [E1b] started: GPU KV cache size: 878,536 tokens, attention block size to 1600, load 33.79 s
+- 18:08:01 UTC [E1b] exact (prompt: TTFT, prefill tok/s, decode): 1,037: 0.31s 3,345 150.9; 4,108: 0.87s 4,715 145.3; 8,205: 1.45s 5,679 143.8; 16,398: 2.38s 6,886 150.1; 32,782: 4.28s 7,656 145.6; 
+- 18:09:30 UTC [E1b] long (prompt: TTFT, prefill tok/s): 65,551: 8.15s 8,046; 131,089: 17.80s 7,474; 
+- 18:10:25 UTC [E1b] code decode:  decode tok/s median 171.2 (min 157.1, max 181.7) | mean acceptance length 3.15 
+- 18:10:25 UTC [E1b] MTP mean acceptance 2.86 (20 samples); GPU busy clocks: GPU0 SM 1455 MHz, 210 W, max 74 C; GPU1 SM 1470 MHz, 138 W, max 67 C
+- 18:14:11 UTC [E2] started: GPU KV cache size: 848,779 tokens, attention block size to 1600, load 36.48 s
+- 18:15:48 UTC [E2] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.34s 3,027 152.9; 4,109: 0.95s 4,331 145.5; 8,204: 3.77s 2,176 134.2; 16,397: 2.39s 6,856 144.9; 32,780: 5.30s 6,189 157.3; 
+- 18:17:38 UTC [E2] long (prompt: TTFT, prefill tok/s): 65,550: 13.32s 5,257; 131,087: 19.21s 6,836; 
+- 18:17:38 UTC [E2] MTP mean acceptance 2.87 (14 samples); GPU busy clocks: GPU0 SM 1455 MHz, 256 W, max 71 C; GPU1 SM 1470 MHz, 127 W, max 63 C
+- 18:21:39 UTC [E3] started: GPU KV cache size: 877,119 tokens, attention block size to 1600, load 34.87 s
+- 18:22:35 UTC [E3] code decode:  decode tok/s median 174.2 (min 149.6, max 181.1) | mean acceptance length 3.09 
+- 18:25:09 UTC [E3] code-edit decode:  code edit, thinking off | decode tok/s median 253.3 (min 250.6, max 255.9) ; code edit, thinking low | decode tok/s median 241.6 (min 237.1, max 243.7) ;
+- 18:25:18 UTC [E3] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.15s TTFT  0.16s , (80%)
+- 18:26:35 UTC [E3] func: 9/8 pass, FUNC ALL PASS
+- 18:26:35 UTC [E3] MTP mean acceptance 3.65 (26 samples); GPU busy clocks: GPU0 SM 1470 MHz, 179 W, max 75 C; GPU1 SM 1485 MHz, 133 W, max 66 C
+- 18:30:36 UTC [E4] started: GPU KV cache size: 1,529,597 tokens, attention block size to 3200, load 35.12 s
+- 18:30:52 UTC [E4] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.80s TTFT  1.05s , (60%)
+- 18:30:52 UTC [E4] MTP mean acceptance 3.56 (1 samples); GPU busy clocks: GPU0 SM 1462 MHz, 287 W, max 55 C; GPU1 SM 1485 MHz, 113 W, max 50 C
+- 18:30:52 UTC phase 1 DONE
+- 18:31:53 UTC phase 1b start
+- 18:35:39 UTC [E1b-m] started: GPU KV cache size: 878,536 tokens, attention block size to 1600, load 34.28 s
+- 18:38:47 UTC [E1b-m] random-token method (prompt: latency, tok/s): 2,048: 0.71s 2,889; 8,192: 1.95s 4,192; 32,768: 6.38s 5,139; 131,072: 37.23s 3,521; 
+- 18:38:47 UTC [E1b-m] MTP mean acceptance n/a; GPU busy clocks: GPU0 SM 1455 MHz, 271 W, max 61 C; GPU1 SM 1470 MHz, 73 W, max 56 C
+- 18:42:33 UTC [E1c] started: GPU KV cache size: 878,536 tokens, attention block size to 1600, load 33.81 s
+- 18:44:44 UTC [E1c] random-token method (prompt: latency, tok/s): 2,048: 0.68s 3,028; 8,192: 1.83s 4,472; 32,768: 6.06s 5,410; 131,072: 22.09s 5,935; 
+- 18:46:06 UTC [E1c] exact (prompt: TTFT, prefill tok/s, decode): 1,037: 0.32s 3,240 143.6; 4,109: 0.93s 4,400 146.2; 8,205: 1.50s 5,479 150.9; 16,398: 2.36s 6,942 145.6; 32,782: 4.14s 7,913 146.6; 
+- 18:47:29 UTC [E1c] long (prompt: TTFT, prefill tok/s): 65,551: 8.27s 7,926; 131,088: 15.93s 8,230; 
+- 18:48:25 UTC [E1c] code decode:  decode tok/s median 169.3 (min 163.6, max 179.7) | mean acceptance length 3.12 
+- 18:48:34 UTC [E1c] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.15s TTFT  0.17s , (80%)
+- 18:48:34 UTC [E1c] MTP mean acceptance 2.91 (18 samples); GPU busy clocks: GPU0 SM 1455 MHz, 224 W, max 78 C; GPU1 SM 1470 MHz, 144 W, max 70 C
+- 18:48:34 UTC phase 1b DONE
+- 18:49:31 UTC phase 1c start (E5 = E1c + ngram_lookup, candidate FINAL)
+- 18:53:14 UTC [E5] started: GPU KV cache size: 877,119 tokens, attention block size to 1600, load 34.38 s
+- 18:54:17 UTC [E5] func: 9/8 pass, FUNC ALL PASS
+- 18:54:27 UTC [E5] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.16s TTFT  0.71s , (79%)
+- 18:55:47 UTC [E5] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.33s 3,167 152.0; 4,109: 0.85s 4,822 144.0; 8,204: 1.39s 5,914 155.1; 16,397: 2.34s 7,011 137.1; 32,781: 4.28s 7,668 155.5; 
+- 18:57:09 UTC [E5] long (prompt: TTFT, prefill tok/s): 65,552: 8.03s 8,168; 131,088: 15.73s 8,336; 
+- 18:58:05 UTC [E5] code decode:  decode tok/s median 170.6 (min 154.4, max 183.1) | mean acceptance length 3.09 
+- 19:00:52 UTC [E5] code-edit decode:  code edit, thinking off | decode tok/s median 250.9 (min 248.9, max 253.3) ; code edit, thinking low | decode tok/s median 237.8 (min 232.0, max 244.7) ;
+- 19:02:55 UTC [E5] conc  u8-1024 | 8 users | 389.5 tok/s total | 188 req | TTFT med 0.32 s p95 0.68 s | tg/stream 54.6 | errors 0 |
+- 19:05:00 UTC [E5] conc  u16-1024 | 16 users | 503.9 tok/s total | 248 req | TTFT med 0.44 s p95 0.94 s | tg/stream 34.9 | errors 0 |
+- 19:07:33 UTC [E5] conc  mixed | 5 users | 163.3 tok/s total | 99 req | TTFT med 0.22 s p95 5.26 s | tg/stream 36.0 | errors 0 | agent TTFT med 4.8 s | chat TTFT med 0.21 s p95 1.26 s |
+- 19:22:39 UTC [E5] SOAK 15 min: 764 requests, errors 0, wrong answers 12 (facts 561/561 correct, tool calls 191/203), overall 764 req, TTFT med 1.20 s max 18.2 s, decode med 48 tok/s, wrong/failed 12 (tool); end vLLM RSS 14.7 GiB, GPU mem/temp 60818, 59 | 61178, 52 |
+- 19:22:39 UTC [E5] MTP mean acceptance 3.29 (173 samples); GPU busy clocks: GPU0 SM 1440 MHz, 276 W, max 80 C; GPU1 SM 1470 MHz, 195 W, max 70 C
+- 19:22:39 UTC phase 1c DONE
+- 19:31:38 UTC [toolsAB] | E1c | tool calls 96/100 | facts 100/100 | failure kinds {'text-answer': 4} |
+- 19:39:38 UTC [toolsAB] | E5 | tool calls 98/100 | facts 100/100 | failure kinds {'text-answer': 2} |
+- 19:39:38 UTC phase 1d DONE
+- 19:40:28 UTC DECISION: FINAL = E5 (exp tree with backports 01-04 + PLE workers 32 / depth 512 / prefetch 131072 / cache 16 GB + ngram_lookup). Tool A/B: E1c 96/100, E5 98/100 (ngram does not hurt). INT8 KV stays off (scale-copy bug confirmed).
+- 19:40:28 UTC [quality] 2a: Intel suite start (profile FINAL-intel)
+- 20:52:52 UTC [quality] 2a: Intel suite done: 20:52:52 [longctx] 180/180 done, acc so far 180/180, runaway 0, errors 0, 387s 20:52:52 [longctx] summary: {"n": 180, "acc": 1.0, "ci95": [0.9791, 1.0], "runaway_rate": 0.0} 2026-10-14 20:52:52 === suite done in 69 min; results in /root/qeval/results/intel/medium 
+- 20:52:52 UTC [quality] 2b: deploying night profile to production 8080
+- 20:56:45 UTC [quality] prod_check: PROD ALL PASS
+- 20:57:51 UTC [quality] func_check: FUNC ALL PASS
+- 20:58:05 UTC [quality] multiturn: prefix cache: 241,984 of 303,424 queried tokens were hits (80%) MULTITURN ALL PASS 
+- 20:58:05 UTC [quality] 2b: Swift suite start (against production 8080)
+- 22:02:36 UTC [quality] 2b: Swift suite done: 22:02:36 [longctx] 180/180 done, acc so far 173/180, runaway 0, errors 0, 416s 22:02:36 [longctx] summary: {"n": 180, "acc": 0.9611, "ci95": [0.9219, 0.981], "runaway_rate": 0.0} 2026-10-14 22:02:36 === suite done in 64 min; results in /root/qeval/results/swift15/medium 
+- 22:05:10 UTC [quality] 3: temperature 0.6 ablation done
+- 22:05:12 UTC [quality] 3: comparison written: /root/qeval/results/compare-medium.md
+- 22:05:12 UTC [quality] phase 2 DONE
+- 22:06:56 UTC night 2 finished; report /root/NIGHT2-REPORT.md; production = FINAL (E5) Swift on 8080
+- 05:00:25 UTC night-2 fallback timers removed (night over; production = FINAL)

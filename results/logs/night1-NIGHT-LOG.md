@@ -1,0 +1,147 @@
+# Night job 2026-10-13 - log
+- 21:20:10 UTC phase 0: baseline profiles saved; downloads started (Swift 598afc96128f, Intel 4c67bf686b7f)
+- 21:22:50 UTC downloads restarted with full SHAs (short SHAs gave HF 500): swift 598afc96128f76a67117caf878f538d34f6f1e02 intel 4c67bf686b7f7fd386bae6b07ab59e8ff1d5b897
+- 21:27:25 UTC phase 2: waiting for downloads
+- 22:14:04 UTC verify swift: 50 files, 134.4 GB, 0 bad
+- 22:17:33 UTC verify intel: 29 files, 181.2 GB, 0 bad
+- 22:21:59 UTC [cyankiwi] started: GPU KV cache size: 573,882 tokens, attention block size to 1600, load 27.73 s
+- 22:23:21 UTC [cyankiwi] func: 9/8 pass, FUNC ALL PASS
+- 22:23:40 UTC [cyankiwi] prod: PROD ALL PASS; low : reasoning 848 chars, completion 780 tok;medium: reasoning 813 chars, completion 838 tok;high : reasoning 783 chars, completion 565 tok;
+- 22:25:09 UTC [cyankiwi] exact (prompt: TTFT, prefill tok/s, decode): 1,038: 0.37s 2,810 122.3; 4,111: 0.88s 4,675 139.4; 8,206: 1.43s 5,745 129.8; 16,399: 2.35s 6,971 141.1; 32,783: 5.07s 6,473 119.5; 
+- 22:26:15 UTC [cyankiwi] code decode:  decode tok/s median 144.1 (min 126.3, max 155.4) | mean acceptance length 3.09 
+- 22:26:25 UTC [cyankiwi] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.16s TTFT  0.17s , (80%)
+- 22:35:09 UTC [cyankiwi] quality:  HumanEval 37/41 | tools 13/13 | finished-answer median 6.0 s, total 51 s 
+- 22:36:12 UTC [cyankiwi] conc  u1-1024 | 1 users | 104.7 tok/s total | 26 req | TTFT med 0.32 s p95 0.45 s | tg/stream 126.4 | errors 0 |
+- 22:38:15 UTC [cyankiwi] conc  u4-1024 | 4 users | 239.3 tok/s total | 114 req | TTFT med 0.35 s p95 0.62 s | tg/stream 69.4 | errors 0 |
+- 22:40:19 UTC [cyankiwi] conc  u8-1024 | 8 users | 350.9 tok/s total | 169 req | TTFT med 0.37 s p95 0.7 s | tg/stream 48.6 | errors 0 |
+- 22:42:57 UTC [cyankiwi] conc  mixed | 5 users | 150.3 tok/s total | 91 req | TTFT med 0.28 s p95 5.91 s | tg/stream 32.4 | errors 0 | agent TTFT med 5.46 s | chat TTFT med 0.23 s p95 1.63 s |
+- 22:43:24 UTC [cyankiwi] disk: disk 37,330 tok: TTFT 5.44 s, read 557 MB during prefill = 14.6 KiB/token, 102 MB/s needed disk 141,766 tok: TTFT 20.73 s, read 1,719 MB during prefill = 11.8 KiB/token, 83 MB/s needed 
+- 22:43:24 UTC [cyankiwi] MTP mean acceptance 2.33 (124 samples); GPU busy clocks: GPU0 SM 1455 MHz, 226 W, max 69 C; GPU1 SM 1410 MHz, 123 W, max 58 C
+- 22:47:25 UTC [swift] started: GPU KV cache size: 901,208 tokens, attention block size to 1600, load 28.99 s
+- 22:48:36 UTC [swift] func: 9/8 pass, FUNC ALL PASS
+- 22:48:53 UTC [swift] prod: PROD ALL PASS; low : reasoning 760 chars, completion 797 tok;medium: reasoning 803 chars, completion 866 tok;high : reasoning 695 chars, completion 618 tok;
+- 22:50:18 UTC [swift] exact (prompt: TTFT, prefill tok/s, decode): 1,035: 0.33s 3,168 142.9; 4,106: 0.87s 4,716 133.4; 8,203: 1.49s 5,504 144.8; 16,397: 2.49s 6,586 132.5; 32,780: 4.93s 6,645 138.6; 
+- 22:51:16 UTC [swift] code decode:  decode tok/s median 161.1 (min 150.8, max 175.7) | mean acceptance length 3.07 
+- 22:51:27 UTC [swift] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.16s TTFT  0.16s , (80%)
+- 22:57:23 UTC [swift] quality:  HumanEval 40/41 | tools 13/13 | finished-answer median 5.0 s, total 44 s 
+- 22:58:25 UTC [swift] conc  u1-1024 | 1 users | 117.0 tok/s total | 28 req | TTFT med 0.32 s p95 0.46 s | tg/stream 147.9 | errors 0 |
+- 23:00:28 UTC [swift] conc  u4-1024 | 4 users | 254.3 tok/s total | 123 req | TTFT med 0.36 s p95 0.65 s | tg/stream 73.1 | errors 0 |
+- 23:02:31 UTC [swift] conc  u8-1024 | 8 users | 350.5 tok/s total | 170 req | TTFT med 0.38 s p95 0.74 s | tg/stream 48.9 | errors 0 |
+- 23:05:09 UTC [swift] conc  mixed | 5 users | 146.3 tok/s total | 90 req | TTFT med 0.29 s p95 6.01 s | tg/stream 31.8 | errors 0 | agent TTFT med 5.66 s | chat TTFT med 0.24 s p95 1.49 s |
+- 23:05:40 UTC [swift] disk: disk 32,262 tok: TTFT 5.68 s, read 1,062 MB during prefill = 32.1 KiB/token, 187 MB/s needed disk 130,999 tok: TTFT 24.90 s, read 3,982 MB during prefill = 29.7 KiB/token, 160 MB/s needed 
+- 23:05:40 UTC [swift] MTP mean acceptance 2.51 (106 samples); GPU busy clocks: GPU0 SM 1455 MHz, 186 W, max 68 C; GPU1 SM 1410 MHz, 108 W, max 57 C
+- 23:09:04 UTC [intel] started: GPU KV cache size: 779,347 tokens, attention block size to 1600, load 28.69 s
+- 23:10:23 UTC [intel] func: 9/8 pass, FUNC ALL PASS
+- 23:10:42 UTC [intel] prod: PROD ALL PASS; low : reasoning 912 chars, completion 832 tok;medium: reasoning 931 chars, completion 906 tok;high : reasoning 715 chars, completion 525 tok;
+- 23:12:11 UTC [intel] exact (prompt: TTFT, prefill tok/s, decode): 1,035: 0.32s 3,232 125.0; 4,107: 0.89s 4,619 125.3; 8,203: 1.39s 5,907 126.5; 16,396: 2.42s 6,771 124.7; 32,780: 4.95s 6,628 122.7; 
+- 23:13:17 UTC [intel] code decode:  decode tok/s median 142.2 (min 130.7, max 157.8) | mean acceptance length 3.10 
+- 23:13:27 UTC [intel] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.16s TTFT  0.15s , (80%)
+- 23:15:41 UTC [intel] quality:  HumanEval 41/41 | tools 13/13 | finished-answer median 5.6 s, total 52 s 
+- 23:16:44 UTC [intel] conc  u1-1024 | 1 users | 102.8 tok/s total | 25 req | TTFT med 0.31 s p95 0.44 s | tg/stream 127.3 | errors 0 |
+- 23:18:47 UTC [intel] conc  u4-1024 | 4 users | 244.1 tok/s total | 117 req | TTFT med 0.37 s p95 0.72 s | tg/stream 71.1 | errors 0 |
+- 23:20:51 UTC [intel] conc  u8-1024 | 8 users | 343.6 tok/s total | 164 req | TTFT med 0.37 s p95 0.66 s | tg/stream 48.4 | errors 0 |
+- 23:23:27 UTC [intel] conc  mixed | 5 users | 152.2 tok/s total | 93 req | TTFT med 0.24 s p95 5.74 s | tg/stream 32.9 | errors 0 | agent TTFT med 5.29 s | chat TTFT med 0.23 s p95 2.04 s |
+- 23:23:54 UTC [intel] disk: disk 25,634 tok: TTFT 4.25 s, read 716 MB during prefill = 27.3 KiB/token, 168 MB/s needed disk 132,670 tok: TTFT 21.77 s, read 2,928 MB during prefill = 21.6 KiB/token, 134 MB/s needed 
+- 23:23:54 UTC [intel] MTP mean acceptance 2.97 (84 samples); GPU busy clocks: GPU0 SM 1455 MHz, 214 W, max 69 C; GPU1 SM 1410 MHz, 126 W, max 58 C
+- 23:23:54 UTC phase 2 DONE
+- 23:24:25 UTC phase 2b (long context) start
+- 23:27:56 UTC [swift-L] started: GPU KV cache size: 901,208 tokens, attention block size to 1600, load 28.81 s
+- 23:29:40 UTC [swift-L] long (prompt: TTFT, prefill tok/s): 65,550: 11.02s 5,973; 131,086: 19.93s 6,610; 
+- 23:29:40 UTC [swift-L] MTP mean acceptance 3.00 (5 samples); GPU busy clocks: GPU0 SM 1380 MHz, 242 W, max 64 C; GPU1 SM 1410 MHz, 114 W, max 58 C
+- 23:33:01 UTC [intel-L] started: GPU KV cache size: 779,347 tokens, attention block size to 1600, load 28.53 s
+- 23:34:45 UTC [intel-L] long (prompt: TTFT, prefill tok/s): 65,550: 10.00s 6,552; 131,086: 21.53s 6,150; 
+- 23:34:45 UTC [intel-L] MTP mean acceptance 2.85 (7 samples); GPU busy clocks: GPU0 SM 1380 MHz, 235 W, max 61 C; GPU1 SM 1395 MHz, 153 W, max 54 C
+- 23:38:44 UTC [cyankiwi-L] started: GPU KV cache size: 573,882 tokens, attention block size to 1600, load 27.36 s
+- 23:40:29 UTC [cyankiwi-L] long (prompt: TTFT, prefill tok/s): 65,553: 10.94s 5,999; 131,090: 21.20s 6,274; 
+- 23:40:29 UTC [cyankiwi-L] MTP mean acceptance 2.92 (6 samples); GPU busy clocks: GPU0 SM 1380 MHz, 238 W, max 61 C; GPU1 SM 1395 MHz, 147 W, max 54 C
+- 23:40:29 UTC phase 2b DONE
+- 23:41:30 UTC DECISION phase 2: winner Swift 1.5 AWQ (HumanEval 40/41 vs Intel 41/41 vs cyankiwi 37/41; code decode 161 vs 142/144; finished answer median 5.0 s vs 5.6/6.0; prefill tied 1K-128K; KV 901K tokens). Runner-up: Intel AutoRound.
+- 23:41:30 UTC phase 3 start, winner profile /root/tune/night/profiles/swift.env
+- 23:45:11 UTC [L0] started: GPU KV cache size: 901,208 tokens, attention block size to 1600, load 28.81 s
+- 23:46:36 UTC [L0] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.34s 3,026 145.6; 4,108: 0.92s 4,444 135.2; 8,204: 1.53s 5,355 141.3; 16,397: 2.46s 6,673 147.6; 32,781: 4.99s 6,575 153.9; 
+- 23:48:46 UTC [L0] conc  u16-1024 | 16 users | 364.8 tok/s total | 184 req | TTFT med 5.85 s p95 6.32 s | tg/stream 50.3 | errors 0 |
+- 23:51:02 UTC [L0] conc  u24-1024 | 24 users | 361.2 tok/s total | 190 req | TTFT med 11.5 s p95 12.2 s | tg/stream 49.1 | errors 0 |
+- 23:53:37 UTC [L0] conc  u8-8192 | 8 users | 132.4 tok/s total | 82 req | TTFT med 2.07 s p95 3.9 s | tg/stream 21.1 | errors 0 |
+- 23:53:37 UTC [L0] MTP mean acceptance 2.74 (49 samples); GPU busy clocks: GPU0 SM 1410 MHz, 242 W, max 68 C; GPU1 SM 1410 MHz, 160 W, max 58 C
+- 23:57:13 UTC [L1] started: GPU KV cache size: 878,536 tokens, attention block size to 1600, load 38.09 s
+- 23:58:41 UTC [L1] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.32s 3,251 144.2; 4,107: 0.89s 4,613 137.4; 8,205: 1.53s 5,373 140.2; 16,397: 2.47s 6,643 140.5; 32,781: 5.29s 6,201 141.6; 
+- 23:59:42 UTC [L1] conc  u1-1024 | 1 users | 106.6 tok/s total | 26 req | TTFT med 0.31 s p95 0.45 s | tg/stream 144.2 | errors 0 |
+- 00:01:45 UTC [L1] conc  u8-1024 | 8 users | 349.2 tok/s total | 169 req | TTFT med 0.38 s p95 0.76 s | tg/stream 49.4 | errors 0 |
+- 00:03:50 UTC [L1] conc  u16-1024 | 16 users | 456.9 tok/s total | 223 req | TTFT med 0.5 s p95 0.91 s | tg/stream 31.3 | errors 0 |
+- 00:05:53 UTC [L1] conc  u24-1024 | 24 users | 493.8 tok/s total | 239 req | TTFT med 0.66 s p95 1.19 s | tg/stream 22.5 | errors 0 |
+- 00:08:29 UTC [L1] conc  u8-8192 | 8 users | 131.8 tok/s total | 83 req | TTFT med 2.17 s p95 5.22 s | tg/stream 20.1 | errors 0 |
+- 00:11:02 UTC [L1] conc  mixed | 5 users | 142.0 tok/s total | 87 req | TTFT med 0.25 s p95 6.84 s | tg/stream 31.9 | errors 0 | agent TTFT med 6.21 s | chat TTFT med 0.23 s p95 2.61 s |
+- 00:11:13 UTC [L1] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.17s TTFT  0.17s , (80%)
+- 00:11:14 UTC [L1] MTP mean acceptance 2.77 (84 samples); GPU busy clocks: GPU0 SM 1410 MHz, 241 W, max 69 C; GPU1 SM 1410 MHz, 161 W, max 58 C
+- 00:14:55 UTC [L2] started: GPU KV cache size: 1,529,597 tokens, attention block size to 3200, load 35.46 s
+- 00:16:24 UTC [L2] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.35s 2,918 133.1; 4,107: 1.05s 3,905 131.0; 8,204: 1.60s 5,115 135.6; 16,398: 2.41s 6,797 134.4; 32,781: 5.38s 6,097 130.9; 
+- 00:17:25 UTC [L2] conc  u1-1024 | 1 users | 114.6 tok/s total | 27 req | TTFT med 0.32 s p95 0.45 s | tg/stream 142.3 | errors 0 |
+- 00:19:28 UTC [L2] conc  u8-1024 | 8 users | 347.6 tok/s total | 168 req | TTFT med 0.39 s p95 0.8 s | tg/stream 49.1 | errors 0 |
+- 00:21:33 UTC [L2] conc  u16-1024 | 16 users | 443.5 tok/s total | 220 req | TTFT med 0.49 s p95 0.86 s | tg/stream 30.3 | errors 0 |
+- 00:23:37 UTC [L2] conc  u24-1024 | 24 users | 494.4 tok/s total | 243 req | TTFT med 0.61 s p95 1.0 s | tg/stream 22.5 | errors 0 |
+- 00:26:12 UTC [L2] conc  u8-8192 | 8 users | 122.8 tok/s total | 78 req | TTFT med 1.93 s p95 4.13 s | tg/stream 18.9 | errors 0 |
+- 00:28:46 UTC [L2] conc  mixed | 5 users | 148.1 tok/s total | 91 req | TTFT med 0.25 s p95 6.09 s | tg/stream 33.3 | errors 0 | agent TTFT med 5.87 s | chat TTFT med 0.24 s p95 2.41 s |
+- 00:31:10 UTC [L2] multiturn: MULTITURN SOME FAILED, follow-up TTFT TTFT  0.17s TTFT  0.17s , (80%)
+- 00:31:10 UTC [L2] MTP mean acceptance 2.50 (97 samples); GPU busy clocks: GPU0 SM 1440 MHz, 218 W, max 68 C; GPU1 SM 1410 MHz, 138 W, max 58 C
+- 00:34:55 UTC [L3] started: GPU KV cache size: 1,672,122 tokens, attention block size to 3200, load 34.95 s
+- 00:36:20 UTC [L3] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.35s 2,947 141.7; 4,109: 1.03s 3,987 135.4; 8,204: 1.57s 5,229 140.7; 16,397: 2.47s 6,627 139.1; 32,781: 5.10s 6,423 132.9; 
+- 00:37:23 UTC [L3] conc  u1-1024 | 1 users | 116.5 tok/s total | 28 req | TTFT med 0.32 s p95 0.52 s | tg/stream 144.1 | errors 0 |
+- 00:39:26 UTC [L3] conc  u8-1024 | 8 users | 349.2 tok/s total | 170 req | TTFT med 0.39 s p95 0.72 s | tg/stream 49.0 | errors 0 |
+- 00:41:30 UTC [L3] conc  u16-1024 | 16 users | 438.0 tok/s total | 213 req | TTFT med 0.49 s p95 0.87 s | tg/stream 30.0 | errors 0 |
+- 00:43:36 UTC [L3] conc  u24-1024 | 24 users | 483.0 tok/s total | 243 req | TTFT med 0.55 s p95 1.21 s | tg/stream 22.3 | errors 0 |
+- 00:46:10 UTC [L3] conc  u8-8192 | 8 users | 125.7 tok/s total | 77 req | TTFT med 1.97 s p95 3.76 s | tg/stream 20.2 | errors 0 |
+- 00:48:44 UTC [L3] conc  mixed | 5 users | 147.2 tok/s total | 89 req | TTFT med 0.24 s p95 6.06 s | tg/stream 31.0 | errors 0 | agent TTFT med 5.86 s | chat TTFT med 0.23 s p95 0.43 s |
+- 00:53:28 UTC [L3] multiturn: MULTITURN SOME FAILED, follow-up TTFT TTFT  0.17s TTFT  0.16s , (80%)
+- 00:53:28 UTC [L3] MTP mean acceptance 2.29 (111 samples); GPU busy clocks: GPU0 SM 1440 MHz, 203 W, max 68 C; GPU1 SM 1410 MHz, 118 W, max 58 C
+- 00:53:28 UTC phase 3: block size 3200 -> chunk 6496 (k=2)
+- 00:57:24 UTC [L4a] started: GPU KV cache size: 1,583,044 tokens, attention block size to 3200, load 35.14 s
+- 00:58:54 UTC [L4a] exact (prompt: TTFT, prefill tok/s, decode): 1,037: 0.33s 3,159 148.5; 4,108: 1.21s 3,389 135.1; 8,206: 1.62s 5,055 135.8; 16,398: 2.65s 6,190 141.1; 32,782: 5.29s 6,194 155.6; 
+- 00:59:56 UTC [L4a] conc  u1-1024 | 1 users | 109.5 tok/s total | 27 req | TTFT med 0.31 s p95 0.46 s | tg/stream 144.5 | errors 0 |
+- 01:02:00 UTC [L4a] conc  u8-1024 | 8 users | 354.2 tok/s total | 170 req | TTFT med 0.37 s p95 0.67 s | tg/stream 49.0 | errors 0 |
+- 01:04:05 UTC [L4a] conc  u16-1024 | 16 users | 434.4 tok/s total | 212 req | TTFT med 0.47 s p95 0.89 s | tg/stream 30.0 | errors 0 |
+- 01:06:10 UTC [L4a] conc  u24-1024 | 24 users | 488.5 tok/s total | 242 req | TTFT med 0.56 s p95 1.01 s | tg/stream 22.4 | errors 0 |
+- 01:08:45 UTC [L4a] conc  u8-8192 | 8 users | 123.3 tok/s total | 79 req | TTFT med 2.25 s p95 5.43 s | tg/stream 19.5 | errors 0 |
+- 01:11:22 UTC [L4a] conc  mixed | 5 users | 153.3 tok/s total | 93 req | TTFT med 0.24 s p95 6.03 s | tg/stream 32.3 | errors 0 | agent TTFT med 5.41 s | chat TTFT med 0.24 s p95 5.05 s |
+- 01:14:26 UTC [L4a] multiturn: MULTITURN SOME FAILED, follow-up TTFT TTFT  0.16s TTFT  0.17s , (80%)
+- 01:14:26 UTC [L4a] MTP mean acceptance 2.44 (102 samples); GPU busy clocks: GPU0 SM 1440 MHz, 215 W, max 67 C; GPU1 SM 1410 MHz, 125 W, max 57 C
+- 01:18:43 UTC [L4b] started: GPU KV cache size: 1,583,044 tokens, attention block size to 3200, load 35.16 s
+- 01:20:10 UTC [L4b] exact (prompt: TTFT, prefill tok/s, decode): 1,037: 0.32s 3,211 151.7; 4,109: 1.00s 4,126 140.1; 8,205: 1.54s 5,312 132.4; 16,398: 2.51s 6,527 142.0; 32,782: 5.08s 6,453 138.9; 
+- 01:21:12 UTC [L4b] conc  u1-1024 | 1 users | 112.4 tok/s total | 27 req | TTFT med 0.32 s p95 0.44 s | tg/stream 142.5 | errors 0 |
+- 01:23:16 UTC [L4b] conc  u8-1024 | 8 users | 360.9 tok/s total | 173 req | TTFT med 0.39 s p95 0.69 s | tg/stream 50.7 | errors 0 |
+- 01:25:21 UTC [L4b] conc  u16-1024 | 16 users | 438.0 tok/s total | 213 req | TTFT med 0.49 s p95 0.88 s | tg/stream 29.9 | errors 0 |
+- 01:27:26 UTC [L4b] conc  u24-1024 | 24 users | 493.0 tok/s total | 245 req | TTFT med 0.6 s p95 1.07 s | tg/stream 22.6 | errors 0 |
+- 01:30:01 UTC [L4b] conc  u8-8192 | 8 users | 125.0 tok/s total | 79 req | TTFT med 1.88 s p95 4.86 s | tg/stream 19.9 | errors 0 |
+- 01:32:37 UTC [L4b] conc  mixed | 5 users | 146.9 tok/s total | 89 req | TTFT med 0.24 s p95 6.04 s | tg/stream 31.9 | errors 0 | agent TTFT med 5.96 s | chat TTFT med 0.23 s p95 2.3 s |
+- 01:36:13 UTC [L4b] multiturn: MULTITURN SOME FAILED, follow-up TTFT TTFT  0.16s TTFT  0.17s , (80%)
+- 01:36:13 UTC [L4b] MTP mean acceptance 2.40 (105 samples); GPU busy clocks: GPU0 SM 1440 MHz, 213 W, max 68 C; GPU1 SM 1410 MHz, 125 W, max 57 C
+- 01:36:13 UTC phase 3 DONE
+- 01:37:10 UTC DECISION phase 3: INT8 KV (L2-L4b) REJECTED - follow-up turns with prefix-cache hits gave empty/wrong answers (model thinks to max_tokens), single-user 4K prefill -15%; BF16 L0/L1 all correct. Ladder winner L1 (BF16, max 24 seqs, extended CUDA graphs): u16 457 vs 365 tok/s (TTFT 0.5 vs 5.9 s), u24 494 vs 361 (TTFT 0.66 vs 11.5 s), single-user unchanged. GPU memory 0.92 not adopted (only tested with INT8). MTP2-under-load skipped (would cost single-user decode).
+- 01:37:10 UTC phase 4 start (L5 chunk size, RAM offload)
+- 01:41:05 UTC [L5] started: GPU KV cache size: 861,532 tokens, attention block size to 1600, load 47.73 s
+- 01:42:34 UTC [L5] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.32s 3,198 135.6; 4,108: 0.88s 4,682 128.2; 8,205: 1.68s 4,883 152.2; 16,397: 2.52s 6,510 140.4; 32,782: 5.38s 6,092 146.9; 
+- 01:44:22 UTC [L5] long (prompt: TTFT, prefill tok/s): 65,550: 11.19s 5,876; 131,087: 21.01s 6,245; 
+- 01:46:57 UTC [L5] conc  u8-8192 | 8 users | 123.4 tok/s total | 77 req | TTFT med 1.92 s p95 4.92 s | tg/stream 19.3 | errors 0 |
+- 01:47:06 UTC [L5] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.15s TTFT  0.17s , (80%)
+- 01:47:06 UTC [L5] MTP mean acceptance 2.78 (31 samples); GPU busy clocks: GPU0 SM 1410 MHz, 228 W, max 65 C; GPU1 SM 1410 MHz, 176 W, max 56 C
+- 01:50:43 UTC [O0] started: GPU KV cache size: 878,536 tokens, attention block size to 1600, load 34.57 s
+- 01:57:30 UTC [O0] offload:  40 sessions x ~32K | round 1 TTFT median 4.99 s | follow-up TTFT median 5.01 s, p90 5.93 s | follow-ups under 1 s: 0/40 | answers correct 80/80 |
+- 01:57:30 UTC [O0] MTP mean acceptance 3.91 (40 samples); GPU busy clocks: GPU0 SM 1365 MHz, 242 W, max 68 C; GPU1 SM 1395 MHz, 198 W, max 60 C
+- 02:01:16 UTC [O1] started: GPU KV cache size: 878,536 tokens, attention block size to 1600, load 39.61 s
+- 02:09:08 UTC [O1] offload:  40 sessions x ~32K | round 1 TTFT median 5.09 s | follow-up TTFT median 5.18 s, p90 5.79 s | follow-ups under 1 s: 0/40 | answers correct 78/80 |
+- 02:09:18 UTC [O1] multiturn: MULTITURN ALL PASS, follow-up TTFT TTFT  0.18s TTFT  0.19s , (80%)
+- 02:10:45 UTC [O1] exact (prompt: TTFT, prefill tok/s, decode): 1,036: 0.32s 3,254 123.8; 4,108: 0.87s 4,699 142.1; 8,204: 1.54s 5,342 135.4; 16,397: 2.73s 6,009 141.8; 32,781: 5.40s 6,068 152.8; 
+- 02:10:45 UTC [O1] MTP mean acceptance 3.32 (57 samples); GPU busy clocks: GPU0 SM 1395 MHz, 233 W, max 67 C; GPU1 SM 1410 MHz, 124 W, max 59 C
+- 02:10:45 UTC phase 4 DONE
+- 02:11:57 UTC DECISION phase 4: chunk 4896 (L5) no gain -> keep 4096. CPU KV offload 16 GB (O1): 0/40 follow-ups restored (same as without, O0: follow-up TTFT ~5 s), 2/80 wrong answers -> rejected. FINAL = L1.
+- 02:15:35 UTC [deploy] production restarted with the night profile: GPU KV cache size: 878,536 tokens
+- 02:15:51 UTC [deploy] prod_check: PROD ALL PASS
+- 02:17:08 UTC [deploy] func_check: FUNC ALL PASS
+- 02:17:22 UTC [deploy] multiturn: prefix cache: 215,360 of 270,354 queried tokens were hits (80%) MULTITURN ALL PASS 
+- 02:20:31 UTC [deploy] full matrix done: 27 clean cells
+- 03:35:39 UTC [deploy] SOAK 75 min: 4261 requests, errors 0, wrong answers 38 (facts 3083/3088 correct, tool calls 1140/1173), overall 4261 req, TTFT med 1.47 s max 19.9 s, decode med 40 tok/s, wrong/failed 38 (fact0, fact1, fact2, tool); end vLLM RSS 11.9 GiB, GPU mem/temp 61660, 55 | 61522, 47 |
+- 03:35:39 UTC [deploy] SOAK NOT CLEAN - check soak.log (production left on the night profile; baseline profile saved as /opt/vllm-qfn/qfn-prod.env.before-night)
+- 03:35:39 UTC [deploy] phase 5 DONE
+- 03:41:13 UTC [tools A/B] swift (production 8080): | swift | tool calls 99/100 | facts 100/100 | failure kinds {'text-answer': 1} |
+- 03:49:00 UTC [tools A/B] cyankiwi (8008): | cyankiwi | tool calls 100/100 | facts 100/100 | failure kinds {} |
+- 03:52:46 UTC [tools A/B] production restored: 8080 200, model /opt/vllm-qfn/models/swift15-awq
+- 03:54:02 UTC night job finished; report /root/NIGHT-REPORT.md; production = Swift 1.5 night profile on 8080

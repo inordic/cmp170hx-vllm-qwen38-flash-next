@@ -1,0 +1,61 @@
+{
+ "exe": "/opt/Strata/engine/strata-prod",
+ "args": [
+  "--pack",
+  "/opt/Strata-data/packs/swift-iq3_xxs",
+  "--native",
+  "/opt/Strata-data/models/swift-IQ3_XXS/Swift-Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf",
+  "--ple-gguf",
+  "/opt/Strata-data/models/swift-IQ3_XXS/Swift-Qwen3.8-Flash-Next-GSQ-RCO-IQ3_XXS-00001-of-00002.gguf",
+  "--expert-profile",
+  "/opt/Strata/data/expert-profile.bin",
+  "--expert-cache",
+  "auto",
+  "--prefill",
+  "auto",
+  "--spec",
+  "4",
+  "--spec-min-p",
+  "0.5",
+  "--mtp",
+  "/opt/Strata-data/mtp/rt",
+  "--max-context",
+  "262144",
+  "--kv",
+  "int8",
+  "--resident-experts",
+  "--pipeline-windows",
+  "2",
+  "--mtp-window",
+  "8192",
+  "--conversation-cache-mib",
+  "8192",
+  "--conversation-cache-slots",
+  "8"
+ ],
+ "cwd": "/opt/Strata",
+ "tokenizer": "/opt/Strata-data/tokenizer-chromix",
+ "model_name": "swift-1.5-iq3_xxs",
+ "log": "/var/log/strata/engine.log",
+ "lib_dirs": [
+  "/usr/local/cuda-13.0/bin",
+  "/usr/local/cuda-13.0/lib64"
+ ],
+ "port": 8080,
+ "gpu": [
+  0,
+  1
+ ],
+ "gpus_asked": true,
+ "layer_split": "auto",
+ "host": "0.0.0.0",
+ "api_key": "<redacted>",
+ "open_browser": false,
+ "env": {
+  "STRATA_PF_FUSED": "1",
+  "STRATA_PF_SPLIT_PARTS": "6",
+  "STRATA_PLE_VRAM": "0",
+  "STRATA_PREFILL_STREAM_MIN": "128",
+  "STRATA_PARK_SKIP_SAME_PREFIX": "1"
+ }
+}

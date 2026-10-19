@@ -1,0 +1,95 @@
+Backport for: vLLM a5a30471ff2b + iIIusi0n qwen38-ple-ssd.patch (sha256 09c4e13f)
+              + 2dameneko 56e1347 patches/apply.sh (verify.sh OK)
+Apply order : 01 -> 02 -> 03 -> 04, each on top of the previous one.
+Apply with  : git apply -p1 --check <patch> && git apply -p1 <patch>   (run in the tree root)
+Patch 03 (optional): vllm-project/vllm#56734 (merged 2026-09-21, d2983f2f163)
+  https://github.com/vllm-project/vllm/pull/56734
+  [Bugfix][Spec Decode] Stop dummy draft decode steps from writing KV through
+  stale block-table rows. Clean cherry-pick (src only).
+---------------------------------------------------------------------------
+
+diff --git a/vllm/v1/worker/gpu/block_table.py b/vllm/v1/worker/gpu/block_table.py
+index c01895e6..6563e30c 100644
+--- a/vllm/v1/worker/gpu/block_table.py
++++ b/vllm/v1/worker/gpu/block_table.py
+@@ -315,6 +315,9 @@ def _compute_slot_mappings_kernel(
+     mapping_enabled = tl.load(slot_mapping_enabled + group_id)
+ 
+     req_state_idx = tl.load(idx_mapping + batch_idx)
++    # idx_mapping == -1 marks a dummy (or CUDA-graph padding) request that owns
++    # no blocks: never read its block-table row and emit PAD for its tokens.
++    is_real_req = req_state_idx >= 0
+     start_idx = tl.load(query_start_loc + batch_idx)
+     end_idx = tl.load(query_start_loc + batch_idx + 1)
+     for i in range(start_idx, end_idx, TRITON_BLOCK_SIZE):
+@@ -342,12 +345,12 @@ def _compute_slot_mappings_kernel(
+         block_offsets = local_positions % kernel_block_size
+         block_numbers = tl.load(
+             block_table_ptr + req_state_idx * block_table_stride + block_indices,
+-            mask=is_local,
++            mask=is_local & is_real_req,
+             other=0,
+         )
+         slot_ids = block_numbers * kernel_block_size + block_offsets
+         if CP_SIZE != 1:
+             slot_ids = tl.where(is_local, slot_ids, PAD_ID)
+ 
+-        slot_ids = tl.where(mapping_enabled, slot_ids, PAD_ID)
++        slot_ids = tl.where(mapping_enabled & is_real_req, slot_ids, PAD_ID)
+         tl.store(slot_mapping_ptr + offset, slot_ids, mask=offset < end_idx)
+diff --git a/vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py b/vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py
+index f166d63e..c787efa0 100644
+--- a/vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py
++++ b/vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py
+@@ -254,6 +254,7 @@ class AutoRegressiveSpeculator(DraftModelSpeculator):
+             input_batch.idx_mapping,
+             temperature,
+             seeds,
++            dummy_run=dummy_run,
+         )
+ 
+         # Get the input ids and last token indices for the speculator.
+diff --git a/vllm/v1/worker/gpu/spec_decode/multi_module_mtp/speculator.py b/vllm/v1/worker/gpu/spec_decode/multi_module_mtp/speculator.py
+index 1c6ae315..fc0924e3 100644
+--- a/vllm/v1/worker/gpu/spec_decode/multi_module_mtp/speculator.py
++++ b/vllm/v1/worker/gpu/spec_decode/multi_module_mtp/speculator.py
+@@ -166,6 +166,7 @@ class MultiModuleMTPSpeculator(DraftModelSpeculator):
+             input_batch.idx_mapping,
+             temperature,
+             seeds,
++            dummy_run=dummy_run,
+         )
+ 
+         num_tokens = input_batch.num_tokens
+diff --git a/vllm/v1/worker/gpu/spec_decode/speculator.py b/vllm/v1/worker/gpu/spec_decode/speculator.py
+index 299cac64..534b6ef8 100644
+--- a/vllm/v1/worker/gpu/spec_decode/speculator.py
++++ b/vllm/v1/worker/gpu/spec_decode/speculator.py
+@@ -481,6 +481,7 @@ class DraftModelSpeculator(BaseSpeculator):
+         temperature: torch.Tensor,
+         # [max_num_reqs]
+         seeds: torch.Tensor,
++        dummy_run: bool = False,
+     ) -> None:
+         # Copy temperature, seeds, and idx mapping to the pre-allocated buffers.
+         # NOTE(woosuk): For draft sampling, we only consider the temperature
+@@ -490,10 +491,15 @@ class DraftModelSpeculator(BaseSpeculator):
+         # affect the output distribution after rejection sampling.
+         self.temperature.copy_(temperature)
+         self.seeds.copy_(seeds)
+-        self.idx_mapping[:num_reqs].copy_(idx_mapping)
+-        # idx_mapping for CG padded requests points to -1, which is ignored
+-        # during sampling to prevent writing stale values to draft logits.
+-        self.idx_mapping[num_reqs:].fill_(-1)
++        # idx_mapping == -1 marks a row the drafter must not act on: sampling
++        # skips it and compute_slot_mappings emits PAD. CUDA-graph padded rows
++        # always get it; a dummy batch gets it for every row, since its arange
++        # idx_mapping names request-state slots with stale block tables.
++        if dummy_run:
++            self.idx_mapping.fill_(-1)
++        else:
++            self.idx_mapping[:num_reqs].copy_(idx_mapping)
++            self.idx_mapping[num_reqs:].fill_(-1)
+ 
+     def _build_uniform_batch_dp_sync(
+         self,

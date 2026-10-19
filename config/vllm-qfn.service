@@ -1,0 +1,21 @@
+[Unit]
+Description=vLLM Qwen3.8-Flash-Next AWQ-INT4 (PP2, PLE table on NVMe) on :8080
+After=network-online.target
+Wants=network-online.target
+# both engines need both GPUs: starting one stops the other
+Conflicts=strata.service
+
+[Service]
+Type=simple
+Environment=RUN_ENV=/opt/vllm-qfn/qfn-prod.env
+Environment=FLASHNEXT_PIDFILE=/run/flashnext-engine.pid
+ExecStart=/bin/bash -c "exec bash /opt/vllm-qfn/release/serve/serve.sh >> /var/log/vllm-qfn/vllm.log 2>&1"
+Restart=always
+RestartSec=15
+LimitMEMLOCK=infinity
+LimitNOFILE=65536
+KillMode=control-group
+TimeoutStopSec=90
+
+[Install]
+WantedBy=multi-user.target

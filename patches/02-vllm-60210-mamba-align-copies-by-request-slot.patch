@@ -1,0 +1,295 @@
+Backport for: vLLM a5a30471ff2b + iIIusi0n qwen38-ple-ssd.patch (sha256 09c4e13f)
+              + 2dameneko 56e1347 patches/apply.sh (verify.sh OK)
+Apply order : 01 -> 02 -> 03 -> 04, each on top of the previous one.
+Apply with  : git apply -p1 --check <patch> && git apply -p1 <patch>   (run in the tree root)
+Patch 02: vllm-project/vllm#60210 (merged 2026-10-07, 8a26869bcad1; in v0.32.0rc0)
+  https://github.com/vllm-project/vllm/pull/60210
+  [Bugfix] Index Mamba align state copies by request slot in MRV2
+  One conflict resolved by hand: model_states/interface.py (the tree has no
+  capture_inner_cudagraphs and no BlockTables import yet; the hook is inserted
+  after apply_staged_writes and the import is added). Src only, tests left out.
+---------------------------------------------------------------------------
+
+diff --git a/vllm/v1/worker/gpu/model_runner.py b/vllm/v1/worker/gpu/model_runner.py
+index a05658e7..881f7530 100644
+--- a/vllm/v1/worker/gpu/model_runner.py
++++ b/vllm/v1/worker/gpu/model_runner.py
+@@ -746,6 +746,7 @@ class GPUModelRunner(LoRAModelRunnerMixin):
+         self.kv_caches = [
+             cache for cache in kv_caches_dict.values() if cache.device == self.device
+         ]
++        self.model_state.initialize_kv_cache(self.kv_cache_config, self.block_tables)
+         if is_profiling:
+             self.kv_connector = NO_OP_KV_CONNECTOR
+         else:
+diff --git a/vllm/v1/worker/gpu/model_states/interface.py b/vllm/v1/worker/gpu/model_states/interface.py
+index a5c8d6f4..5b198302 100644
+--- a/vllm/v1/worker/gpu/model_states/interface.py
++++ b/vllm/v1/worker/gpu/model_states/interface.py
+@@ -17,6 +17,7 @@ from vllm.v1.attention.backend import AttentionCGSupport
+ from vllm.v1.core.sched.output import NewRequestData
+ from vllm.v1.kv_cache_interface import KVCacheConfig
+ from vllm.v1.worker.encoder_cudagraph import EncoderCudaGraphManager
++from vllm.v1.worker.gpu.block_table import BlockTables
+ from vllm.v1.worker.gpu.input_batch import InputBatch
+ from vllm.v1.worker.gpu.mm.encoder_cache import EncoderCache
+ from vllm.v1.worker.gpu.mm.encoder_runner import EncoderRunner
+@@ -126,6 +127,12 @@ class ModelState(ABC):
+     def apply_staged_writes(self) -> None:
+         return None
+ 
++    def initialize_kv_cache(
++        self, kv_cache_config: KVCacheConfig, block_tables: BlockTables
++    ) -> None:
++        """Hook run after the KV cache tensors are allocated and bound."""
++        return None
++
+     def get_additional_cg_support(self) -> tuple[AttentionCGSupport, str | None]:
+         """Cudagraph support of attention groups this ModelState builds outside
+         ``init_attn_backend`` (e.g. encoder-only layers).
+diff --git a/vllm/v1/worker/gpu/model_states/mamba_hybrid.py b/vllm/v1/worker/gpu/model_states/mamba_hybrid.py
+index e213f744..a50a17b5 100644
+--- a/vllm/v1/worker/gpu/model_states/mamba_hybrid.py
++++ b/vllm/v1/worker/gpu/model_states/mamba_hybrid.py
+@@ -21,6 +21,7 @@ from vllm.v1.core.sched.output import NewRequestData
+ from vllm.v1.kv_cache_interface import KVCacheConfig, MambaSpec
+ from vllm.v1.utils import CpuGpuBuffer
+ from vllm.v1.worker.gpu.attn_utils import build_attn_metadata
++from vllm.v1.worker.gpu.block_table import BlockTables
+ from vllm.v1.worker.gpu.input_batch import InputBatch
+ from vllm.v1.worker.gpu.mm.encoder_cache import EncoderCache
+ from vllm.v1.worker.gpu.model_states.default import DefaultModelState
+@@ -143,47 +144,42 @@ class MambaHybridModelState(DefaultModelState):
+             self._mamba_spec = mamba_spec
+         return self._mamba_group_ids, self._mamba_spec
+ 
+-    def _ensure_align_ctx(
+-        self,
+-        kv_cache_config: KVCacheConfig,
+-        mamba_group_ids: list[int],
+-        block_tables: tuple[torch.Tensor, ...],
+-    ) -> MambaSpecDecodeGPUContext:
++    def initialize_kv_cache(
++        self, kv_cache_config: KVCacheConfig, block_tables: BlockTables
++    ) -> None:
++        if not self._align_mode:
++            return
++        mamba_group_ids, _ = self._get_mamba_group_info(kv_cache_config)
+         if self._mamba_state_copy_funcs is None:
+             mamba_groups = get_mamba_groups(kv_cache_config)
+             mamba_types = {spec.mamba_type for spec in mamba_groups}
+             copy_funcs = self.model.get_mamba_state_copy_funcs(mamba_types)
+             validate_mamba_state_copy_funcs(mamba_groups, copy_funcs)
+             self._mamba_state_copy_funcs = copy_funcs
+-        copy_funcs = self._mamba_state_copy_funcs
+-        if self._mamba_ctx is None:
+-            # Both SD and DS conv layouts support a >0 spec-decode shift: the
+-            # fused pre-copy kernel (``_copy_mamba_state_block``) applies the
+-            # ``token_bias = num_accepted - 1`` window shift per conv layout
+-            # (SD: contiguous slice; DS: per-dim-row strided slice), matching
+-            # the V1 ``get_conv_copy_spec`` semantics.
+-            self._mamba_ctx = MambaSpecDecodeGPUContext.create(
+-                max_num_reqs=self.max_num_reqs,
+-                kv_cache_config=kv_cache_config,
+-                copy_funcs=copy_funcs,
+-                device=self.device,
+-                make_buffer=lambda n, dtype: CpuGpuBuffer(
+-                    n, dtype=dtype, device=self.device
+-                ),
+-            )
+-        ctx = self._mamba_ctx
+-        if not ctx.is_initialized:
+-            forward_context = self.vllm_config.compilation_config.static_forward_context
+-            # block_tables are batch-order slices of the persistent
+-            # input_block_tables (stable data_ptr), so the metadata is captured
+-            # once here and reused across steps.
+-            ctx.initialize_from_forward_context(
+-                kv_cache_config,
+-                forward_context,
+-                copy_funcs,
+-                [block_tables[gid] for gid in mamba_group_ids],
+-            )
+-        return ctx
++        # Both SD and DS conv layouts support a >0 spec-decode shift: the
++        # fused pre-copy kernel (``_copy_mamba_state_block``) applies the
++        # ``token_bias = num_accepted - 1`` window shift per conv layout
++        # (SD: contiguous slice; DS: per-dim-row strided slice), matching
++        # the V1 ``get_conv_copy_spec`` semantics.
++        self._mamba_ctx = MambaSpecDecodeGPUContext.create(
++            max_num_reqs=self.max_num_reqs,
++            kv_cache_config=kv_cache_config,
++            copy_funcs=self._mamba_state_copy_funcs,
++            device=self.device,
++            make_buffer=lambda n, dtype: CpuGpuBuffer(
++                n, dtype=dtype, device=self.device
++            ),
++        )
++        # Under PP a step's postprocess runs after later steps re-gathered the
++        # batch-ordered input tables, so state copies read the per-request-slot
++        # tables. Aligned state indices are for the current batch only.
++        self._mamba_ctx.initialize_from_forward_context(
++            kv_cache_config,
++            self.vllm_config.compilation_config.static_forward_context,
++            self._mamba_state_copy_funcs,
++            [block_tables.block_tables[gid].gpu for gid in mamba_group_ids],
++            [block_tables.input_block_tables[gid] for gid in mamba_group_ids],
++        )
+ 
+     def preprocess_state(
+         self,
+@@ -203,8 +199,9 @@ class MambaHybridModelState(DefaultModelState):
+         num_reqs = input_batch.num_reqs
+         if num_reqs == 0:
+             return
+-        mamba_group_ids, mamba_spec = self._get_mamba_group_info(kv_cache_config)
+-        ctx = self._ensure_align_ctx(kv_cache_config, mamba_group_ids, block_tables)
++        _, mamba_spec = self._get_mamba_group_info(kv_cache_config)
++        ctx = self._mamba_ctx
++        assert ctx is not None
+ 
+         # The state-advance + pre-copy kernels run every step; they fast-exit per
+         # request when src_col < 0 or src_col == dst_col, so no copy happens on
+@@ -303,10 +300,8 @@ class MambaHybridModelState(DefaultModelState):
+                     if hasattr(builder, "mamba_aligned_state_indices"):
+                         aligned_index_builders.append((group_idx, builder))
+             if aligned_index_builders:
+-                ctx = self._ensure_align_ctx(
+-                    kv_cache_config, mamba_group_ids, block_tables
+-                )
+-                all_group_indices = ctx.compute_aligned_state_indices(
++                assert self._mamba_ctx is not None
++                all_group_indices = self._mamba_ctx.compute_aligned_state_indices(
+                     input_batch.seq_lens, num_reqs
+                 )
+                 for group_idx, builder in aligned_index_builders:
+diff --git a/vllm/v1/worker/mamba_utils.py b/vllm/v1/worker/mamba_utils.py
+index c2e0120e..daf2446f 100644
+--- a/vllm/v1/worker/mamba_utils.py
++++ b/vllm/v1/worker/mamba_utils.py
+@@ -392,8 +392,8 @@ def postprocess_mamba_fused_kernel(
+     # Output: num_accepted_tokens update (for src==dst case)
+     num_accepted_tokens_out_ptr,
+     # Optional: batch_idx -> req_idx mapping (V2 model runner / PP). The
+-    # per-request decision arrays are in req-state-slot order; the block table
+-    # is in batch order, so HAS_IDX_MAPPING splits the two indexings.
++    # per-request decision arrays and the block tables are both in
++    # req-state-slot order.
+     idx_mapping_ptr,
+     # Runtime parameter (varies per batch - NOT constexpr to avoid recompilation)
+     num_reqs,
+@@ -476,10 +476,9 @@ def postprocess_mamba_fused_kernel(
+     if src_block_idx == dest_block_idx and accept_token_bias == 0:
+         return
+ 
+-    bt_row_idx = batch_idx if HAS_IDX_MAPPING else req_idx
+     _copy_mamba_state_block(
+         state_idx,
+-        bt_row_idx,
++        req_idx,
+         src_block_idx,
+         dest_block_idx,
+         accept_token_bias,
+@@ -610,7 +609,7 @@ def precopy_mamba_align_fused_kernel(
+     token_bias = tl.load(token_bias_ptr + req_idx)
+     _copy_mamba_state_block(
+         state_idx,
+-        batch_idx,
++        req_idx,
+         src_col,
+         dst_col,
+         token_bias,
+@@ -806,8 +805,10 @@ class MambaSpecDecodeGPUContext:
+ 
+     # Per-group block-table base addresses: int64[num_groups]. Populated in
+     # initialize_from_forward_context from the persistent per-group block
+-    # table tensors (whose data_ptr is stable across steps).
++    # table tensors (whose data_ptr is stable across steps). Rows are request
++    # state slots for the state copies and batch rows for the aligned indices.
+     block_table_ptrs: torch.Tensor
++    aligned_index_block_table_ptrs: torch.Tensor
+     block_table_stride_req: int = 0
+ 
+     # persistent output for the once-per-step, all-group aligned-index launch.
+@@ -900,6 +901,9 @@ class MambaSpecDecodeGPUContext:
+             block_table_ptrs=torch.zeros(
+                 len(mamba_group_ids), dtype=torch.int64, device=device
+             ),
++            aligned_index_block_table_ptrs=torch.zeros(
++                len(mamba_group_ids), dtype=torch.int64, device=device
++            ),
+             aligned_state_indices=torch.empty(
+                 (
+                     len(mamba_group_ids),
+@@ -924,6 +928,7 @@ class MambaSpecDecodeGPUContext:
+         forward_context: dict[str, Any],
+         mamba_state_copy_funcs: MambaStateCopyFuncsByType,
+         block_tables: list[torch.Tensor],
++        aligned_index_block_tables: list[torch.Tensor] | None = None,
+     ) -> None:
+         """Extract and cache memory layout metadata from Mamba state tensors.
+ 
+@@ -955,8 +960,12 @@ class MambaSpecDecodeGPUContext:
+             mamba_state_copy_funcs: Mapping from MambaAttentionBackendEnum to
+                 copy functions.
+             block_tables: per-mamba-group persistent block-table tensors, in
+-                the same order as `mamba_group_ids`. Their `data_ptr()` /
+-                `stride(0)` are captured once for the kernel to index into.
++                the same order as `mamba_group_ids`, with one row per request
++                state slot. Their `data_ptr()` / `stride(0)` are captured once
++                for the state-copy kernels to index into.
++            aligned_index_block_tables: per-mamba-group persistent tables
++                read by `compute_aligned_state_indices`, with one row per
++                batch row. Defaults to `block_tables`.
+ 
+         """
+         if self.is_initialized:
+@@ -968,6 +977,7 @@ class MambaSpecDecodeGPUContext:
+                 forward_context,
+                 mamba_state_copy_funcs,
+                 block_tables,
++                aligned_index_block_tables or block_tables,
+             )
+ 
+     def _populate_metadata(
+@@ -976,6 +986,7 @@ class MambaSpecDecodeGPUContext:
+         forward_context: dict[str, Any],
+         mamba_state_copy_funcs: MambaStateCopyFuncsByType,
+         block_tables: list[torch.Tensor],
++        aligned_index_block_tables: list[torch.Tensor],
+     ) -> None:
+         idx = 0
+         for group_local_idx, mamba_group_id in enumerate(self.mamba_group_ids):
+@@ -1076,16 +1087,19 @@ class MambaSpecDecodeGPUContext:
+         # `block_tables[i]` is the persistent 2D int32 block-table tensor for
+         # `mamba_group_ids[i]`; `data_ptr()` / `stride(0)` are stable for the
+         # engine's lifetime, so we capture them once here.
+-        assert len(block_tables) == self.num_groups, (
+-            f"expected {self.num_groups} block tables, got {len(block_tables)}"
+-        )
+-        strides = {bt.stride(0) for bt in block_tables}
++        assert len(block_tables) == len(aligned_index_block_tables) == self.num_groups
++        strides = {bt.stride(0) for bt in (*block_tables, *aligned_index_block_tables)}
+         assert len(strides) == 1, (
+             f"all mamba block tables must share stride(0), got {strides}"
+         )
+         self.block_table_stride_req = int(next(iter(strides)))
+-        for i, bt in enumerate(block_tables):
++        for i, (bt, aligned_bt) in enumerate(
++            zip(block_tables, aligned_index_block_tables)
++        ):
+             self.block_table_ptrs[i] = _reinterpret_u64_as_i64(bt.data_ptr())
++            self.aligned_index_block_table_ptrs[i] = _reinterpret_u64_as_i64(
++                aligned_bt.data_ptr()
++            )
+ 
+         self.is_initialized = True
+ 
+@@ -1107,7 +1121,7 @@ class MambaSpecDecodeGPUContext:
+         block_rows = 32
+         grid = (triton.cdiv(num_reqs, block_rows),)
+         get_aligned_state_indices_multi_group_kernel[grid](
+-            self.block_table_ptrs,
++            self.aligned_index_block_table_ptrs,
+             seq_lens,
+             self.aligned_state_indices,
+             self.block_table_stride_req,

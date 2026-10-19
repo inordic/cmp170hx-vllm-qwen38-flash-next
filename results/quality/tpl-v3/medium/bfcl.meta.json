@@ -1,0 +1,173 @@
+{
+ "bench": "bfcl",
+ "start": "2026-10-16T23:44:57",
+ "cfg": {
+  "endpoint": "http://127.0.0.1:8008",
+  "model": "qwen3.8-flash-next",
+  "insecure": false,
+  "tag": "tpl-v3",
+  "effort": "medium",
+  "effort_mode": "kwargs",
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 0.0,
+  "seed_base": 1234,
+  "use_seed": true,
+  "order_seed": 7,
+  "max_tokens": 8192,
+  "stream": true,
+  "extra_body": {
+   "chat_template_kwargs": {
+    "strict_tool_rules": true
+   }
+  },
+  "history_reasoning": "both",
+  "concurrency": 16,
+  "read_timeout": 1800,
+  "retries": 3,
+  "exec_timeout": null
+ },
+ "n_items": 1040,
+ "repeats": 2,
+ "budget_min": 38.0,
+ "argv": [
+  "run",
+  "--bench",
+  "bfcl",
+  "--bfcl-spec",
+  "simple_python:100,multiple:100,parallel:100,parallel_multiple:100,irrelevance:100,live_simple:100,live_multiple:150,live_parallel:16,live_parallel_multiple:24,live_irrelevance:150,multi_turn_base:100",
+  "--repeats",
+  "2",
+  "--endpoint",
+  "http://127.0.0.1:8008",
+  "--model",
+  "qwen3.8-flash-next",
+  "--tag",
+  "tpl-v3",
+  "--effort",
+  "medium",
+  "--temperature",
+  "1.0",
+  "--top-p",
+  "0.95",
+  "--top-k",
+  "20",
+  "--out",
+  "/root/qeval/results",
+  "--extra-body",
+  "{\"chat_template_kwargs\":{\"strict_tool_rules\":true}}",
+  "--concurrency",
+  "16",
+  "--budget-min",
+  "38"
+ ],
+ "models": {
+  "object": "list",
+  "data": [
+   {
+    "id": "qwen3.8-flash-next",
+    "object": "model",
+    "created": 1792194297,
+    "owned_by": "vllm",
+    "root": "/opt/vllm-qfn/models/swift15-awq",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-80eac35043d50cb3",
+      "object": "model_permission",
+      "created": 1792194297,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   },
+   {
+    "id": "swift-1.5-awq",
+    "object": "model",
+    "created": 1792194297,
+    "owned_by": "vllm",
+    "root": "/opt/vllm-qfn/models/swift15-awq",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-a2ae2a0c61d1eed7",
+      "object": "model_permission",
+      "created": 1792194297,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   },
+   {
+    "id": "Qwen3.8-Flash-Next-AWQ-INT4",
+    "object": "model",
+    "created": 1792194297,
+    "owned_by": "vllm",
+    "root": "/opt/vllm-qfn/models/swift15-awq",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-b37040c1b9a4d24d",
+      "object": "model_permission",
+      "created": 1792194297,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   },
+   {
+    "id": "swift-1.5-iq3_xxs",
+    "object": "model",
+    "created": 1792194297,
+    "owned_by": "vllm",
+    "root": "/opt/vllm-qfn/models/swift15-awq",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-928a13cdb975f88d",
+      "object": "model_permission",
+      "created": 1792194297,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   }
+  ]
+ },
+ "end": "2026-10-17T00:10:22",
+ "wall_s": 1525.7
+}

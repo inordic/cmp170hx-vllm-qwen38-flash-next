@@ -1,0 +1,124 @@
+{
+ "overall": {
+  "n": 478,
+  "correct": 408,
+  "acc": 0.8536,
+  "ci95": [
+   0.819,
+   0.8824
+  ],
+  "runaway": 10,
+  "runaway_rate": 0.0209,
+  "runaway_ci95": [
+   0.0114,
+   0.0381
+  ],
+  "runaway_no_answer": 10,
+  "looping": 1,
+  "acc_excl_runaway": 0.8718,
+  "errors_api": 0,
+  "errors_harness": 0,
+  "raw_tool_markup": 0,
+  "tokens_mean": 1318.6,
+  "tokens_median": 548.0,
+  "tokens_p90": 2109.8,
+  "reasoning_tokens_mean": 1182.1,
+  "prompt_tokens_mean": 157.9,
+  "calls_mean": 1,
+  "latency_median_s": 9.575,
+  "latency_p90_s": 40.2,
+  "ttft_median_s": 0.17,
+  "t_answer_median_s": 7.336,
+  "acc_at_cap": {
+   "2048": 0.7992,
+   "4096": 0.8368,
+   "8192": 0.8473,
+   "12288": 0.8494,
+   "16384": 0.8536,
+   "24576": 0.8536,
+   "32768": 0.8536
+  }
+ },
+ "by_subset": {
+  "humaneval+": {
+   "n": 149,
+   "correct": 140,
+   "acc": 0.9396,
+   "ci95": [
+    0.8892,
+    0.9679
+   ],
+   "runaway": 2,
+   "runaway_rate": 0.0134,
+   "runaway_ci95": [
+    0.0037,
+    0.0476
+   ],
+   "runaway_no_answer": 2,
+   "looping": 0,
+   "acc_excl_runaway": 0.9524,
+   "errors_api": 0,
+   "errors_harness": 0,
+   "raw_tool_markup": 0,
+   "tokens_mean": 1216.9,
+   "tokens_median": 661.0,
+   "tokens_p90": 1731.6,
+   "reasoning_tokens_mean": 1022.8,
+   "prompt_tokens_mean": 221.0,
+   "calls_mean": 1,
+   "latency_median_s": 10.948,
+   "latency_p90_s": 34.307,
+   "ttft_median_s": 0.178,
+   "t_answer_median_s": 8.475,
+   "acc_at_cap": {
+    "2048": 0.8725,
+    "4096": 0.9128,
+    "8192": 0.9329,
+    "12288": 0.9396,
+    "16384": 0.9396,
+    "24576": 0.9396,
+    "32768": 0.9396
+   }
+  },
+  "mbpp+": {
+   "n": 329,
+   "correct": 268,
+   "acc": 0.8146,
+   "ci95": [
+    0.769,
+    0.8529
+   ],
+   "runaway": 8,
+   "runaway_rate": 0.0243,
+   "runaway_ci95": [
+    0.0124,
+    0.0472
+   ],
+   "runaway_no_answer": 8,
+   "looping": 1,
+   "acc_excl_runaway": 0.8349,
+   "errors_api": 0,
+   "errors_harness": 0,
+   "raw_tool_markup": 0,
+   "tokens_mean": 1364.7,
+   "tokens_median": 484.0,
+   "tokens_p90": 2155.0,
+   "reasoning_tokens_mean": 1254.2,
+   "prompt_tokens_mean": 129.3,
+   "calls_mean": 1,
+   "latency_median_s": 8.888,
+   "latency_p90_s": 41.114,
+   "ttft_median_s": 0.168,
+   "t_answer_median_s": 6.617,
+   "acc_at_cap": {
+    "2048": 0.766,
+    "4096": 0.8024,
+    "8192": 0.8085,
+    "12288": 0.8085,
+    "16384": 0.8146,
+    "24576": 0.8146,
+    "32768": 0.8146
+   }
+  }
+ }
+}

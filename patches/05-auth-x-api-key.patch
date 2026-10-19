@@ -1,0 +1,24 @@
+--- a/vllm/entrypoints/serve/middleware/authenticate.py
++++ b/vllm/entrypoints/serve/middleware/authenticate.py
+@@ -29,12 +29,15 @@
+ 
+     def verify_token(self, headers: Headers) -> bool:
+         authorization_header_value = headers.get("Authorization")
+-        if not authorization_header_value:
+-            return False
+-
+-        scheme, _, param = authorization_header_value.partition(" ")
+-        if scheme.lower() != "bearer":
+-            return False
++        if authorization_header_value:
++            scheme, _, param = authorization_header_value.partition(" ")
++            if scheme.lower() != "bearer":
++                return False
++        else:
++            # Asgard local patch: Anthropic-style clients send the key as `x-api-key`
++            param = headers.get("x-api-key")
++            if not param:
++                return False
+ 
+         param_hash = hashlib.sha256(param.encode("utf-8")).digest()
+ 

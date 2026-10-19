@@ -1,0 +1,38 @@
+# Night 3 (2026-10-16/17): best chat template for QFN - log
+- 21:53:15 UTC start; server A = qfn-asgard-v1
+- 22:37:09 UTC tpl-v0 done: bfcl n=2080 acc=0.7889 run=0.001;evalplus n=542 acc=0.8579 run=0.0018;longctx n=180 acc=0.9833 run=0.0;
+- 23:04:27 UTC tpl-v1 done: bfcl n=2080 acc=0.7808 run=0.0014;
+- 23:44:50 UTC tpl-v2 done: bfcl n=2080 acc=0.7832 run=0.0019;evalplus n=542 acc=0.8542 run=0.0055;longctx n=180 acc=0.9611 run=0.0;
+- 00:10:22 UTC tpl-v3 done: bfcl n=2080 acc=0.7875 run=0.0014;
+- 00:36:47 UTC tpl-v4 done: bfcl n=2080 acc=0.7784 run=0.001;
+- 00:36:47 UTC server B = chromix v1 (production template)
+- 01:21:02 UTC tpl-chromix done: bfcl n=2080 acc=0.8024 run=0.001;evalplus n=542 acc=0.8487 run=0.0055;longctx n=180 acc=0.9722 run=0.0;
+- 01:21:16 UTC comparison written: /root/qeval/results/compare-templates.md
+- 01:24:53 UTC production restored (baseline): 8080 200
+- 01:24:53 UTC DONE
+- 01:30:16 UTC [night3b] start, server defaults {"reasoning_effort":"medium","tool_prompt":"chromix"}
+- 01:30:16 UTC [verify] patch A1-thinking-off-consistency applied
+- 01:30:16 UTC [verify] patch A2-history-reasoning-fields applied
+- 01:30:16 UTC [verify] profile T_v2: chat-template --async-scheduling chat-template /opt/vllm-qfn/templates/qfn-asgard-v2.jinja default-chat-template-kwargs {\"reasoning_effort\":\"medium\",\"tool_prompt\":\"chromix\"} 
+- 01:34:32 UTC [verify] feature check: FEATURES: 29/29 pass; fails: 
+- 01:34:48 UTC [verify] prod_check: PROD ALL PASS
+- 01:35:50 UTC [verify] func_check: FUNC ALL PASS
+- 01:36:04 UTC [verify] multiturn: prefix cache: 264,512 of 331,524 queried tokens were hits (80%) MULTITURN ALL PASS 
+- 02:15:40 UTC [verify] tpl-v2final: bfcl n=2080 acc=0.8034 run=0.001;evalplus n=542 acc=0.8653 run=0.0018;longctx n=180 acc=0.9722 run=0.0;
+- 02:29:58 UTC [verify] tpl-v2-nopreserve: 02:29:58 [bfcl] summary: {"n": 200, "acc": 0.57, "ci95": [0.5007, 0.6367], "runaway_rate": 0.0};
+- 02:29:58 UTC [verify] DONE
+- 02:29:59 UTC [exp] request-level template probe: HTTP 200
+- 02:42:05 UTC [exp] tpl-x-v2-noreason: 02:42:05 [bfcl] summary: {"n": 200, "acc": 0.62, "ci95": [0.5511, 0.6844], "runaway_rate": 0.0};
+- 02:53:19 UTC [exp] tpl-x-swiftorig-noreason: 02:53:19 [bfcl] summary: {"n": 200, "acc": 0.59, "ci95": [0.5208, 0.6558], "runaway_rate": 0.0};
+- 03:05:38 UTC [exp] tpl-x-swiftorig: 03:05:38 [bfcl] summary: {"n": 200, "acc": 0.615, "ci95": [0.546, 0.6797], "runaway_rate": 0.0};
+- 03:34:12 UTC [exp] tpl-x-xhigh: 03:20:07 [bfcl] summary: {"n": 1040, "acc": 0.7529, "ci95": [0.7258, 0.7781], "runaway_rate": 0.0019};03:34:12 [evalplus] summary: {"n": 478, "acc": 0.8536, "ci95": [0.819, 0.8824], "runaway_rate": 0.0209};
+- 03:34:12 UTC [exp] experiments DONE
+- 03:34:12 UTC [deploy] new profile flags: --chat-template /opt/vllm-qfn/templates/qfn-asgard-v2.jinja --default-chat-template-kwargs {"reasoning_effort":"medium","tool_prompt":"chromix"} 
+- 03:38:00 UTC [deploy] 8080 healthy with qfn-asgard-v2
+- 03:38:16 UTC [deploy] prod_check: PROD ALL PASS
+- 03:39:30 UTC [deploy] func_check: FUNC ALL PASS
+- 03:39:45 UTC [deploy] multiturn: prefix cache: 258,784 of 324,449 queried tokens were hits (80%) MULTITURN ALL PASS 
+- 03:40:11 UTC [deploy] feature check on 8080: FEATURES: 29/29 pass; fails: 
+- 03:40:54 UTC [deploy] speed (median, vs night-2 E5): 4096: pp 4920 (102%) tg 148 (103%); 32768: pp 7788 (102%) tg 152 (98%)
+- 03:40:54 UTC [deploy] DEPLOYED
+- 03:40:54 UTC [night3b] END; 8080 200

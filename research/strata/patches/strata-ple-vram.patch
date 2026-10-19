@@ -1,0 +1,329 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6e0ce1c..5ebcb18 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -349,6 +349,7 @@ if(STRATA_ENABLE_CUDA OR STRATA_ENABLE_HIP)
+                           src/kernels/cuda/qsa_select.cu
+                           src/kernels/cuda/verify_kernels.cu
+                           src/kernels/cuda/iq_kernels.cu
++                          src/kernels/cuda/ple_vram.cu
+                           src/kernels/ngram.cpp
+                           src/ngram/ple_reader.cpp
+                           src/platform/direct_file.cpp)
+diff --git a/include/strata/kernels/ple_vram.hpp b/include/strata/kernels/ple_vram.hpp
+new file mode 100644
+index 0000000..b6c0f96
+--- /dev/null
++++ b/include/strata/kernels/ple_vram.hpp
+@@ -0,0 +1,30 @@
++// include/strata/kernels/ple_vram.hpp - the n-gram (PLE) table resident in one GPU's memory (opt-in).
++//
++// STRATA_PLE_VRAM=<device> (the engine's CUDA ordinal): the whole table is copied from its GGUF into that device's
++// memory when it opens, and the prompt path's batched row reads (PleTable::gather_batch) gather their raw rows there
++// instead of reading them from the SSD.  A card with VRAM to spare beside its expert cache then reads long prompts
++// without ~30K random SSD reads per second, so a busy or slow disk no longer slows the prompt.  The rows come back to
++// the host as the same raw bytes the SSD reader returns and are decoded by the same code: the numbers do not change.
++// Single-token reads (decode) keep the SSD reader.
++#pragma once
++
++#include <cstddef>
++#include <cstdint>
++#include <string>
++
++namespace strata::kernels {
++
++struct PleVram;
++
++/// Copy `bytes` of the table at `offset` in `path` into device `device`.  nullptr (and `err`) when the device has no
++/// room or the file cannot be read; the caller then keeps the SSD reader.
++PleVram* ple_vram_create(int device, const std::string& path, uint64_t offset, uint64_t n_rows, uint32_t row_bytes,
++                         std::string& err);
++
++/// The raw bytes of `n` rows (`rows[i]` -> `row_bytes` bytes at i * row_bytes), in a pinned host buffer that stays
++/// valid until the next call.  nullptr (and `err`) on a CUDA error.  Rows past the table come back as zeros.
++const uint8_t* ple_vram_gather(PleVram* v, const uint32_t* rows, size_t n, std::string& err);
++
++void ple_vram_destroy(PleVram* v);
++
++}  // namespace strata::kernels
+diff --git a/src/kernels/cuda/ple_vram.cu b/src/kernels/cuda/ple_vram.cu
+new file mode 100644
+index 0000000..9b59088
+--- /dev/null
++++ b/src/kernels/cuda/ple_vram.cu
+@@ -0,0 +1,213 @@
++// src/kernels/cuda/ple_vram.cu - see include/strata/kernels/ple_vram.hpp.
++#include "strata/kernels/ple_vram.hpp"
++
++#include <cuda_runtime.h>
++
++#include <algorithm>
++#include <cerrno>
++#include <chrono>
++#include <cstdio>
++#include <cstring>
++#include <mutex>
++
++#include <fcntl.h>
++#include <unistd.h>
++
++namespace strata::kernels {
++
++struct PleVram {
++    int dev = 0;
++    uint8_t* table = nullptr;     // device: the whole table
++    uint64_t n_rows = 0;
++    uint32_t rb = 0;
++    cudaStream_t stream = nullptr;
++    uint32_t* d_idx = nullptr;    // device row indices
++    uint8_t* d_out = nullptr;     // device gathered rows
++    uint32_t* h_idx = nullptr;    // pinned
++    uint8_t* h_out = nullptr;     // pinned
++    size_t cap = 0;               // rows the buffers above hold
++    std::mutex mu;
++};
++
++namespace {
++
++// one warp per row: the row's bytes, lane by lane (rows are 90 / 110 / 160 B)
++__global__ void ple_vram_gather_kernel(const uint8_t* __restrict__ table, uint64_t n_rows,
++                                       const uint32_t* __restrict__ idx, uint8_t* __restrict__ out, size_t n,
++                                       uint32_t rb) {
++    const size_t i = (size_t) blockIdx.x * (blockDim.x / 32) + threadIdx.x / 32;
++    if (i >= n) return;
++    const uint32_t lane = threadIdx.x & 31;
++    const uint64_t r = idx[i];
++    uint8_t* o = out + i * rb;
++    if (r >= n_rows) {
++        for (uint32_t b = lane; b < rb; b += 32) o[b] = 0;
++        return;
++    }
++    const uint8_t* s = table + r * rb;
++    for (uint32_t b = lane; b < rb; b += 32) o[b] = s[b];
++}
++
++struct DeviceScope {
++    int prev = -1;
++    explicit DeviceScope(int dev) {
++        if (cudaGetDevice(&prev) != cudaSuccess) prev = -1;
++        cudaSetDevice(dev);
++    }
++    ~DeviceScope() {
++        if (prev >= 0) cudaSetDevice(prev);
++    }
++};
++
++std::string cuda_err(const char* what) {
++    return std::string("PLE VRAM: ") + what + ": " + cudaGetErrorString(cudaGetLastError());
++}
++
++}  // namespace
++
++PleVram* ple_vram_create(int device, const std::string& path, uint64_t offset, uint64_t n_rows, uint32_t row_bytes,
++                         std::string& err) {
++    const auto t0 = std::chrono::steady_clock::now();
++    const uint64_t bytes = n_rows * (uint64_t) row_bytes;
++    PleVram* v = new PleVram;
++    v->dev = device;
++    v->n_rows = n_rows;
++    v->rb = row_bytes;
++    DeviceScope scope(device);
++    size_t free_b = 0, total_b = 0;
++    cudaMemGetInfo(&free_b, &total_b);
++    if (cudaMalloc((void**) &v->table, bytes) != cudaSuccess) {
++        char buf[200];
++        std::snprintf(buf, sizeof buf, "PLE VRAM: %.1f GiB do not fit on device %d (%.1f GiB free)",
++                      (double) bytes / (1ull << 30), device, (double) free_b / (1ull << 30));
++        err = buf;
++        cudaGetLastError();
++        delete v;
++        return nullptr;
++    }
++    if (cudaStreamCreateWithFlags(&v->stream, cudaStreamNonBlocking) != cudaSuccess) {
++        err = cuda_err("stream");
++        ple_vram_destroy(v);
++        return nullptr;
++    }
++    const int fd = ::open(path.c_str(), O_RDONLY);
++    if (fd < 0) {
++        err = "PLE VRAM: cannot open " + path + ": " + std::strerror(errno);
++        ple_vram_destroy(v);
++        return nullptr;
++    }
++    // two pinned staging pieces: the disk fills one while the other uploads
++    constexpr size_t kPiece = 256ull << 20;
++    uint8_t* stage[2] = {nullptr, nullptr};
++    cudaEvent_t done[2] = {nullptr, nullptr};
++    bool ok = cudaMallocHost((void**) &stage[0], kPiece) == cudaSuccess &&
++              cudaMallocHost((void**) &stage[1], kPiece) == cudaSuccess &&
++              cudaEventCreateWithFlags(&done[0], cudaEventDisableTiming) == cudaSuccess &&
++              cudaEventCreateWithFlags(&done[1], cudaEventDisableTiming) == cudaSuccess;
++    if (!ok) err = cuda_err("staging buffers");
++    uint64_t pos = 0;
++    int b = 0;
++    double next_note = 5.0;
++    while (ok && pos < bytes) {
++        const size_t len = (size_t) std::min<uint64_t>(kPiece, bytes - pos);
++        if (cudaEventSynchronize(done[b]) != cudaSuccess) { ok = false; err = cuda_err("upload"); break; }
++        size_t got = 0;
++        while (got < len) {
++            const ssize_t r = ::pread(fd, stage[b] + got, len - got, (off_t) (offset + pos + got));
++            if (r <= 0) {
++                ok = false;
++                err = "PLE VRAM: short read of " + path;
++                break;
++            }
++            got += (size_t) r;
++        }
++        if (!ok) break;
++#if defined(POSIX_FADV_DONTNEED)
++        (void) posix_fadvise(fd, (off_t) (offset + pos), (off_t) len, POSIX_FADV_DONTNEED);   // keep the file cache free
++#endif
++        if (cudaMemcpyAsync(v->table + pos, stage[b], len, cudaMemcpyHostToDevice, v->stream) != cudaSuccess ||
++            cudaEventRecord(done[b], v->stream) != cudaSuccess) {
++            ok = false;
++            err = cuda_err("upload");
++            break;
++        }
++        pos += len;
++        b ^= 1;
++        const double s = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
++        if (s >= next_note) {
++            std::fprintf(stderr, "strata: PLE VRAM: %.1f of %.1f GiB copied to device %d (%.0f s)\n",
++                         (double) pos / (1ull << 30), (double) bytes / (1ull << 30), device, s);
++            std::fflush(stderr);
++            next_note += 10.0;
++        }
++    }
++    if (ok && cudaStreamSynchronize(v->stream) != cudaSuccess) { ok = false; err = cuda_err("upload"); }
++    for (int i = 0; i < 2; ++i) {
++        if (done[i]) cudaEventDestroy(done[i]);
++        if (stage[i]) cudaFreeHost(stage[i]);
++    }
++    ::close(fd);
++    if (!ok) {
++        ple_vram_destroy(v);
++        return nullptr;
++    }
++    const double s = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();
++    std::fprintf(stderr, "strata: PLE VRAM: the n-gram table (%.1f GiB, %llu rows of %u B) is resident on device %d "
++                         "(copied in %.1f s, %.0f MB/s); the prompt path gathers its rows there\n",
++                 (double) bytes / (1ull << 30), (unsigned long long) n_rows, row_bytes, device, s,
++                 (double) bytes / 1e6 / std::max(s, 1e-3));
++    return v;
++}
++
++const uint8_t* ple_vram_gather(PleVram* v, const uint32_t* rows, size_t n, std::string& err) {
++    if (n == 0) return v->h_out;
++    std::lock_guard<std::mutex> lk(v->mu);
++    DeviceScope scope(v->dev);
++    if (n > v->cap) {
++        const size_t cap = std::max(n, v->cap * 2);
++        if (v->d_idx) cudaFree(v->d_idx);
++        if (v->d_out) cudaFree(v->d_out);
++        if (v->h_idx) cudaFreeHost(v->h_idx);
++        if (v->h_out) cudaFreeHost(v->h_out);
++        v->d_idx = nullptr; v->d_out = nullptr; v->h_idx = nullptr; v->h_out = nullptr; v->cap = 0;
++        if (cudaMalloc((void**) &v->d_idx, cap * 4) != cudaSuccess ||
++            cudaMalloc((void**) &v->d_out, cap * v->rb) != cudaSuccess ||
++            cudaMallocHost((void**) &v->h_idx, cap * 4) != cudaSuccess ||
++            cudaMallocHost((void**) &v->h_out, cap * v->rb) != cudaSuccess) {
++            err = cuda_err("gather buffers");
++            return nullptr;
++        }
++        v->cap = cap;
++    }
++    std::memcpy(v->h_idx, rows, n * 4);
++    constexpr unsigned kThreads = 256;   // 8 rows per block
++    const unsigned blocks = (unsigned) ((n + (kThreads / 32) - 1) / (kThreads / 32));
++    if (cudaMemcpyAsync(v->d_idx, v->h_idx, n * 4, cudaMemcpyHostToDevice, v->stream) != cudaSuccess) {
++        err = cuda_err("index upload");
++        return nullptr;
++    }
++    ple_vram_gather_kernel<<<blocks, kThreads, 0, v->stream>>>(v->table, v->n_rows, v->d_idx, v->d_out, n, v->rb);
++    if (cudaMemcpyAsync(v->h_out, v->d_out, n * v->rb, cudaMemcpyDeviceToHost, v->stream) != cudaSuccess ||
++        cudaStreamSynchronize(v->stream) != cudaSuccess) {
++        err = cuda_err("gather");
++        return nullptr;
++    }
++    return v->h_out;
++}
++
++void ple_vram_destroy(PleVram* v) {
++    if (v == nullptr) return;
++    {
++        DeviceScope scope(v->dev);
++        if (v->stream) cudaStreamSynchronize(v->stream);
++        if (v->table) cudaFree(v->table);
++        if (v->d_idx) cudaFree(v->d_idx);
++        if (v->d_out) cudaFree(v->d_out);
++        if (v->h_idx) cudaFreeHost(v->h_idx);
++        if (v->h_out) cudaFreeHost(v->h_out);
++        if (v->stream) cudaStreamDestroy(v->stream);
++    }
++    delete v;
++}
++
++}  // namespace strata::kernels
+diff --git a/src/kernels/ngram.cpp b/src/kernels/ngram.cpp
+index 90631b4..14b8d8c 100644
+--- a/src/kernels/ngram.cpp
++++ b/src/kernels/ngram.cpp
+@@ -6,9 +6,11 @@
+ #include "strata/artifact/dequant.hpp"
+ #include "strata/kernels/f16_bits.hpp"
+ #include "strata/ngram/ple_reader.hpp"
++#include "strata/kernels/ple_vram.hpp"
+ #include "strata/platform/memory.hpp"
+ 
+ #include <cerrno>
++#include <cstdlib>
+ #include <cmath>
+ #include <cstdio>
+ #include <cstring>
+@@ -221,6 +223,7 @@ struct PleTable::Impl {
+     uint8_t prefetch_raw[kMaxPrefetch][PLE_N_HEADS * PLE_ROW_BYTES_MAX] = {};
+     float scale = 1.0f;               // the FP8 table's one scale
+     uint32_t rb = PLE_ROW_BYTES;      // bytes per row
++    strata::kernels::PleVram* vram = nullptr;   // STRATA_PLE_VRAM: the table on a GPU for gather_batch
+     void decode(const uint8_t* row, float* out160) const { fmt->dequant(row, scale, out160); }
+ };
+ 
+@@ -326,6 +329,13 @@ bool PleTable::open(const std::string& gguf_path, std::string& err, const PleIoO
+         }
+         impl_->reader.set_keepalive(io.keepalive_ms, io.keepalive_window_s);
+         impl_->n_rows = n_rows;
++        if (const char* vd = std::getenv("STRATA_PLE_VRAM"); vd != nullptr && vd[0] != '\0' && vd[0] != '-') {
++            std::string verr;
++            impl_->vram = strata::kernels::ple_vram_create(std::atoi(vd), gguf_path, table_offset, n_rows, impl_->rb, verr);
++            if (impl_->vram == nullptr)
++                std::fprintf(stderr, "strata: warning: %s - the prompt path keeps reading the table from the SSD\n",
++                             verr.c_str());
++        }
+     }
+     if (io.mode == PleIo::Mmap && io.lock && impl_->data != nullptr) {
+ #if defined(_WIN32)
+@@ -422,6 +432,8 @@ void PleTable::prefetch_rows(const uint32_t* rows16) {
+ 
+ void PleTable::close() {
+     wait_prefetches();
++    strata::kernels::ple_vram_destroy(impl_->vram);
++    impl_->vram = nullptr;
+     impl_->reader.close();
+     impl_->pending = false;
+     impl_->locked = false;   // the unmap below releases the lock
+@@ -507,6 +519,14 @@ bool PleTable::collect(float* out2560, std::string& err) {
+ bool PleTable::gather_batch(const uint32_t* rows, size_t n_tokens, float* out, std::string& err) {
+     if (impl_->pending) { err = "PleTable::gather_batch while a token is in flight"; return false; }
+     const size_t n = n_tokens * (size_t) PLE_N_HEADS;
++    if (impl_->vram != nullptr) {
++        wait_prefetches();
++        const uint8_t* raw = strata::kernels::ple_vram_gather(impl_->vram, rows, n, err);
++        if (raw == nullptr) return false;
++        for (size_t i = 0; i < n; ++i) impl_->decode(raw + i * impl_->rb, out + i * PLE_HEAD_DIM);
++        impl_->bytes_read += (uint64_t) n * impl_->rb;
++        return true;
++    }
+     if (impl_->mode == PleIo::Direct) {
+         // Fast path: if all requested tokens match our in-flight/completed prefetch slots, collect them directly
+         // without issuing a second PleReader ticket or copying through RowCache.
