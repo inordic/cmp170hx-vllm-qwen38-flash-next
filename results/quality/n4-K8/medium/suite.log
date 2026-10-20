@@ -1,0 +1,40 @@
+2026-10-20 02:26:48 === suite start TAG=n4-K8 MODEL=qwen3.8-flash-next EFFORT=medium C=16 endpoint=http://127.0.0.1:8008
+[sandbox] mode=nobody+netns python=/usr/bin/python3 base=/tmp/qeval-sbx-230129
+02:26:49 selftest evalplus canonical HumanEval/0: OK
+02:26:49 selftest evalplus canonical HumanEval/10: OK
+02:26:49 selftest evalplus canonical HumanEval/53: OK
+02:26:49 selftest evalplus canonical HumanEval/129: OK
+02:26:49 selftest evalplus canonical Mbpp/2: OK
+02:26:49 selftest evalplus canonical Mbpp/124: OK
+02:26:49 selftest evalplus canonical Mbpp/581: OK
+02:26:49 selftest evalplus canonical Mbpp/722: OK
+02:26:49 selftest evalplus wrong solution rejected: OK
+02:26:49 selftest lcb stdin ok: OK
+02:26:49 selftest lcb stdin input(): OK
+02:26:49 selftest lcb stdin wrong: OK
+02:26:51 selftest lcb stdin tle: OK
+02:26:51 selftest lcb call ok: OK
+02:26:51 selftest isolation probe (the output shows what sandboxed code could do): {"uid": 65534, "net": "blocked", "harness_dir_write": "blocked"}
+
+02:26:51 sandbox mode: nobody+netns python=/usr/bin/python3
+02:26:51 SELFTEST PASSED
+02:26:51 /v1/models -> 200: ['qwen3.8-flash-next', 'swift-1.5-awq', 'Qwen3.8-Flash-Next-AWQ-INT4', 'swift-1.5-iq3_xxs']
+02:26:52 effort=low: tokens=181 reasoning_chars=247 answer='17' err=None
+02:26:53 effort=medium: tokens=185 reasoning_chars=256 answer='17' err=None
+02:26:54 effort=high: tokens=188 reasoning_chars=297 answer='17' err=None
+02:26:54 tool call: [{'id': 'chatcmpl-tool-874d9fce286d56e1', 'name': 'get_weather', 'arguments': '{"city": "Gothenburg", "unit": "c"}'}] finish=tool_calls err=None
+02:26:54 probe written to /root/qeval/results/probe-n4-K8-20261020-022654.json
+2026-10-20 02:26:54 --- longctx (budget 20 min, 150 min left in suite)
+02:26:54 [longctx] 180 items x 1 repeats; 0 already done; 180 to run; concurrency=6; budget=1200s
+02:28:12 [longctx] 18/180 done, acc so far 18/18, runaway 0, errors 0, 78s
+02:28:52 [longctx] 36/180 done, acc so far 36/36, runaway 0, errors 0, 117s
+02:29:50 [longctx] 54/180 done, acc so far 53/54, runaway 0, errors 0, 176s
+02:30:31 [longctx] 72/180 done, acc so far 71/72, runaway 0, errors 0, 216s
+02:31:04 [longctx] 90/180 done, acc so far 89/90, runaway 0, errors 0, 250s
+02:31:35 [longctx] 108/180 done, acc so far 107/108, runaway 0, errors 0, 280s
+02:32:07 [longctx] 126/180 done, acc so far 125/126, runaway 0, errors 0, 313s
+02:32:51 [longctx] 144/180 done, acc so far 143/144, runaway 0, errors 0, 356s
+02:33:33 [longctx] 162/180 done, acc so far 160/162, runaway 0, errors 0, 398s
+02:34:15 [longctx] 180/180 done, acc so far 177/180, runaway 0, errors 0, 441s
+02:34:15 [longctx] summary: {"n": 180, "acc": 0.9833, "ci95": [0.9522, 0.9943], "runaway_rate": 0.0}
+2026-10-20 02:34:15 === suite done in 7 min; results in /root/qeval/results/n4-K8/medium

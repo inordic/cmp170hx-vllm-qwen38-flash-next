@@ -1,0 +1,39 @@
+model qwen3.8-flash-next: 12 cases x 3 requests, 6 in flight, ~8000 prompt tokens
+  case   0 cold: ok
+  case   0 warm: ok
+  case   0 turn: ok
+  case   1 cold: ok
+  case   1 warm: ok
+  case   1 turn: ok
+  case   2 cold: ok
+  case   2 warm: ok
+  case   2 turn: ok
+  case   3 cold: ok
+  case   3 warm: ok
+  case   3 turn: ok
+  case   4 cold: ok
+  case   4 warm: ok
+  case   4 turn: ok
+  case   5 cold: ok
+  case   5 warm: ok
+  case   5 turn: ok
+  case   6 cold: ok
+  case   6 warm: ok
+  case   6 turn: ok
+  case   7 cold: ok
+  case   7 warm: ok
+  case   7 turn: ok
+  case   8 cold: ok
+  case   8 warm: ok
+  case   8 turn: ok
+  case   9 cold: ok
+  case   9 warm: ok
+  case   9 turn: ok
+  case  10 cold: ok
+  case  10 warm: ok
+  case  10 turn: ok
+  case  11 cold: ok
+  case  11 warm: ok
+  case  11 turn: ok
+
+36/36 answers correct

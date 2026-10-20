@@ -1,0 +1,40 @@
+server http://127.0.0.1:8008  model qwen3.8-flash-next  T=0.0 top_p=1.0 top_k=-1
+
+1 stream(s)   server mean accepted length 2.51
+  stream   tokens  steps  tok/step  last40%  status
+  R1          400    160      2.50     2.46  ok
+
+3 stream(s)   server mean accepted length 2.42
+  stream   tokens  steps  tok/step  last40%  status
+  R1          400    164      2.44     2.32  ok
+  R2          400    162      2.47     2.57  ok
+  R3          400    172      2.33     2.31  ok
+
+5 stream(s)   server mean accepted length 2.40
+  stream   tokens  steps  tok/step  last40%  status
+  R1          400    164      2.44     2.08  ok
+  R2          400    171      2.34     2.44  ok
+  R3          400    184      2.17     2.03  ok
+  R4          400    156      2.56     2.62  ok
+  R5          400    162      2.47     2.46  ok
+
+6 stream(s)   server mean accepted length 2.52
+  stream   tokens  steps  tok/step  last40%  status
+  R1          400    157      2.55     2.39  ok
+  R2          400    165      2.42     2.50  ok
+  R3          400    172      2.33     2.30  ok
+  R4          400    156      2.56     2.66  ok
+  R5          400    153      2.61     2.96  ok
+  R6          400    154      2.60     2.70  ok
+
+7 stream(s)   server mean accepted length 2.36
+  stream   tokens  steps  tok/step  last40%  status
+  R1          400    172      2.33     2.01  ok
+  R2          400    163      2.45     2.37  ok
+  R3          400    176      2.27     2.21  ok
+  R4          400    162      2.47     2.56  ok
+  R5          400    177      2.26     2.31  ok
+  R6          400    162      2.47     2.41  ok
+  R7          400    180      2.22     1.97  ok
+
+PASS: 21 parallel streams kept speculative decoding (baseline 2.50 tokens/step)

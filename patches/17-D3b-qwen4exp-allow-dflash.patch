@@ -1,0 +1,23 @@
+Patch D3b (ours): allow method "dflash" in the Qwen4Exp speculative-decoding guard.
+For   : vLLM a5a30471 + iIIusi0n PLE-SSD + 2dameneko 56e1347 + patches 01-16 of this repository (needs D3, the tap).
+Why   : Qwen4Exp refused every spec method except mtp/ngram/ngram_gpu, so DFlash2 could not start
+        ("Qwen4Exp speculative decoding supports only its native MTP checkpoint and linear n-gram proposers").
+Effect: none unless the speculative config uses "method": "dflash".
+Apply : git apply -p1 --check <patch> && git apply -p1 <patch>   (run in the tree root)
+Applied inline on the night-4 tree on 2026-10-19; this diff is taken from the pre-D3b backup.
+
+--- a/vllm/model_executor/models/config.py
++++ b/vllm/model_executor/models/config.py
+@@ -887,10 +887,12 @@
+         if multimodal_config is not None and multimodal_config.language_model_only:
+             _strip_qwen4_exp_mrope(vllm_config.model_config)
+         spec_config = vllm_config.speculative_config
++        # Asgard patch D3b: DFlash2 runs on the qwen4_exp aux-hidden-state tap (patch D3)
+         if spec_config is not None and spec_config.method not in {
+             "mtp",
+             "ngram",
+             "ngram_gpu",
++            "dflash",
+         }:
+             raise NotImplementedError(
+                 "Qwen4Exp speculative decoding supports only its native MTP "

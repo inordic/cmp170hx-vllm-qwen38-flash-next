@@ -1,0 +1,2 @@
+| n4-D3 | code edit, thinking off | decode tok/s median 256.8 (min 254.6, max 258.4) |
+| n4-D3 | code edit, thinking low | decode tok/s median 247.4 (min 239.1, max 250.8) |

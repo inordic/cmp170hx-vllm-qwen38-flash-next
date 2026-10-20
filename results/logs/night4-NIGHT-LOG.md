@@ -1,0 +1,120 @@
+# Night 4 (2026-10-19/20) plan v2: drafting, bias test, batch/split, bounded prefill, A16, Q6x, Intel, INT8 KV, terse
+- 20:00:00 UTC start; production profile saved as /root/tune/night4/qfn-prod.env.baseline; clocks locked at 1440 MHz for the A/B phases
+- 20:01:35 UTC [host] clocks: 20:01:32 lock 1440: GPU clocks set to "(gpuClkMin 1440, gpuClkMax 1440)" for GPU 00000000:01:00.0 GPU clocks set to "(gpuClkMin 1440, gpuClkMax 1440)" for GPU 0
+- 20:01:47 UTC T3 kernel exactness rc=0: p=[0.2, 0.4, 0.4] q=[0.6, 0.3, 0.1] c3    : TV=0.0008 chi2 p=0.0678 outside=0  ok;p=[0.05, 0.5, 0.3, 0.15] q=[0.7, 0.25, 0.04, 0.01] shared: TV=0.0659 chi2 p=0 outside=0  biased (expected: shows the test detects shared noise);p=[0.05, 0.5, 0.3, 0.15] q=[0.7, 0.25, 0.04, 0.01] tree  : TV=0.0008 chi2 p=0.093 outside=0  ok;p=[0.05, 0.5, 0.3, 0.15] q=[0.7, 0.25, 0.04, 0.01] c3    : TV=0.0011 chi2 p=0.00589 outside=0  ok;c1: gather_draft_sampled -> [5, 6, 7, 8, 9, -1, -1, -1]  ok;RESULT: PASS;
+- 20:05:58 UTC [T0] up (ready after 251 s); GPU KV cache size: 877,119 tokens
+- [T0] prefill 1K 3204 8K 5547 32K 7659 | decode-at-size 1K 154 8K 148 32K 140 | code 168.5 tok/s (accept 3.12) | edit off 248.0 / low 237.8 | func PASS | multiturn PASS
+- 20:15:16 UTC PREEMPT canary: prompt 130,848 tokens, TTFT 16.2 s, preemptions 0 -> OK (no leak);
+- 20:15:49 UTC [T0] T1 rc=0 (PASS):  PASS: 21 parallel streams kept speculative decoding (baseline 2.67 tokens/step) 
+- 20:16:00 UTC [T0] T2 rc=0 (PASS):  24/24 trials OK; first token '!' in 0/24 (a high rate with top_p=1/top_k=-1 points at accepted placeholder drafts, i.e. C1 missing) 
+- 20:16:32 UTC [T0] T4 rc=0 (PASS):  72/72 answers correct 
+- 20:19:38 UTC [NOSPEC] up (ready after 185 s); GPU KV cache size: 1,497,330 tokens
+- [NOSPEC] prefill - | decode-at-size - | code 83.0 tok/s (accept 1.00) | edit off 83.9 / low 83.8 | quick (decode only)
+- 20:33:12 UTC greedy identity NOSPEC vs T0: 10/16 identical; first difference at chars [227, 44, 401, 102, 296, 209]
+- 20:37:08 UTC [D3] up (ready after 235 s); GPU KV cache size: 857,281 tokens
+- [D3] prefill 1K 3185 8K 5482 32K 7685 | decode-at-size 1K 156 8K 147 32K 160 | code 179.2 tok/s (accept 3.05) | edit off 256.8 / low 247.4 | func PASS | multiturn PASS
+- 20:43:30 UTC greedy identity T0 vs D3: 5/16 identical; first difference at chars [178, 188, 233, 529, 401, 33, 304, 421, 324, 547, 209]
+- 21:03:32 UTC [D4] server did NOT start: (APIServer pid=199511) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+- 21:07:13 UTC [D4p16] up (ready after 221 s); GPU KV cache size: 838,024 tokens
+- [D4p16] prefill 1K 3152 8K 5591 32K 7700 | decode-at-size 1K 165 8K 153 32K 151 | code 193.6 tok/s (accept 3.51) | edit off 303.7 / low 290.1 | func PASS | multiturn PASS
+- 21:15:51 UTC [D5] server did NOT start: (APIServer pid=201754) RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+- 21:18:56 UTC [D5p16] server did NOT start: (EngineCore pid=202363) RuntimeError: Worker failed with error 'QSA ring capacity 12 must divide the attention block size 1616', please check the stack trace above for the root cause
+- 21:18:56 UTC speed selection (greedy drafting): D3: score 214.5 (+4.9% vs T0), prefill ok True;D4p16: score 242.4 (+18.6% vs T0), prefill ok True;BEST D4p16 242.4 +0.186;
+- 21:23:53 UTC [MB] up (ready after 236 s); GPU KV cache size: 1,054,153 tokens
+- [MB] prefill 1K 3844 8K 5634 32K 7763 | decode-at-size 1K 165 8K 151 32K 175 | code 186.8 tok/s (accept 3.42) | edit off 307.9 / low 293.3 | func PASS | multiturn PASS
+- 21:29:47 UTC greedy identity T0 vs MB: 7/16 identical; first difference at chars [151, 920, 33, 118, 102, 40, 324, 296, 209]
+- 21:29:47 UTC INT4 MTP experts on D4p16: REJECT -0.011
+- 21:30:08 UTC [DF3] server did NOT start: (APIServer pid=203653) NotImplementedError: Qwen4Exp speculative decoding supports only its native MTP checkpoint and linear n-gram proposers
+- 21:30:23 UTC [DFI] server did NOT start: (APIServer pid=203751) NotImplementedError: Qwen4Exp speculative decoding supports only its native MTP checkpoint and linear n-gram proposers
+- 21:30:23 UTC DFlash2 vs D4p16 (report only): DF3 vs D4p16: code n/a, edit n/a, accept 0.00 vs 3.51 | 5 drafts: DF5 vs D4p16: code n/a, edit n/a, accept 0.00 vs 3.51
+- 21:34:04 UTC [PRn] up (ready after 220 s); GPU KV cache size: 835,235 tokens
+- [PRn] prefill 1K 3231 8K 5499 32K 7691 | decode-at-size 1K 169 8K 181 32K 171 | code 187.9 tok/s (accept 3.51) | edit off 303.6 / low 291.3 | func PASS | multiturn PASS
+- 21:41:58 UTC bias test: letters  T0               TV vs NOSPEC: 0.0541  (noise floor 0.0731, permutation p=0.825; n=1500, lengths [(12, 1413), (1, 67)])  -> ok;letters  PRn              TV vs NOSPEC: 0.0566  (noise floor 0.0731, permutation p=0.555; n=1500, lengths [(12, 1398), (1, 84)])  -> ok;digits   T0               TV vs NOSPEC: 0.0393  (noise floor 0.0477, permutation p=0.060; n=1500, lengths [(16, 1492), (1, 8)])  -> ok;digits   PRn              TV vs NOSPEC: 0.0413  (noise floor 0.0477, permutation p=0.035; n=1500, lengths [(16, 1499), (1, 1)])  -> ok;
+- 21:42:30 UTC [PRn] T1 rc=0 (PASS):  PASS: 21 parallel streams kept speculative decoding (baseline 2.68 tokens/step) 
+- 21:42:43 UTC [PRn] T2 rc=0 (PASS):  24/24 trials OK; first token '!' in 0/24 (a high rate with top_p=1/top_k=-1 points at accepted placeholder drafts, i.e. C1 missing) 
+- 21:55:50 UTC [n4-PRn] suite: bfcl n=1040 acc=0.8135 run=0.0019;
+- 21:59:56 UTC [PRpad] up (ready after 240 s); GPU KV cache size: 835,235 tokens
+- 22:00:09 UTC [PRpad] T2 rc=0 (PASS):  24/24 trials OK; first token '!' in 0/24 (a high rate with top_p=1/top_k=-1 points at accepted placeholder drafts, i.e. C1 missing) 
+- 22:00:25 UTC [PRpad] T4 rc=0 (PASS):  36/36 answers correct 
+- 22:00:25 UTC [PRpad] (Worker_PP0_EP0 pid=205580) WARNING 10-19 21:59:34 [model_runner.py:1155] Asgard C4 PP skew probe: consumed step 1, req slot 23 was scheduled again at step 2 before its deferred align postprocess (ske;
+- 22:04:19 UTC [SW0] up (ready after 230 s); GPU KV cache size: 838,024 tokens
+- [SW0] prefill 8K 5733 32K 7696 128K 8169 | decode-at-size 8K 151 32K 144 128K 151 | code 194.4 tok/s (accept 3.53) | edit off 0.0 / low 0.0 | quick (decode only)
+- 22:10:56 UTC [B3296] up (ready after 216 s); GPU KV cache size: 854,756 tokens
+- [B3296] prefill 8K 5585 32K 7739 128K 8182 | decode-at-size 8K 143 32K 160 128K 182 | code 189.0 tok/s (accept 3.50) | edit off 0.0 / low 0.0 | quick (decode only)
+- 22:17:15 UTC [B4896] up (ready after 216 s); GPU KV cache size: 821,291 tokens
+- [B4896] prefill 8K 5094 32K 7665 128K 8629 | decode-at-size 8K 151 32K 162 128K 167 | code 190.9 tok/s (accept 3.53) | edit off 0.0 / low 0.0 | quick (decode only)
+- 22:24:11 UTC [S26] up (ready after 251 s); GPU KV cache size: 1,003,955 tokens
+- [S26] prefill 8K 5612 32K 7377 128K 8020 | decode-at-size 8K 153 32K 163 128K 160 | code 189.2 tok/s (accept 3.52) | edit off 0.0 / low 0.0 | quick (decode only)
+- 22:27:06 UTC batch pick: B3296: prefill 7957 (+0.4%), code decode 97%;B4896: prefill 8133 (+2.6%), code decode 98%;PICK SW0;
+- 22:27:06 UTC split pick: S26: prefill 7692 (-3.0%), code decode 97%;PICK SW0;
+- 22:30:56 UTC [BP_off] up (ready after 225 s); GPU KV cache size: 838,024 tokens
+- 22:33:29 UTC [BP_off] conc mixed | n4-BP_off | mixed | 5 users | 171.3 tok/s total | 103 req | TTFT med 0.24 s p95 5.2 s | tg/stream 35.7 | errors 0 | agent TTFT med 4.88 s | chat TTFT med 0.22 s p95 0.45 s |
+- 22:36:02 UTC [BP_off] conc u8-1024 | n4-BP_off | u8-1024 | 8 users | 393.7 tok/s total | 234 req | TTFT med 0.41 s p95 0.67 s | tg/stream 55.0 | errors 0 |
+- 22:39:38 UTC [BP_lpt] up (ready after 215 s); GPU KV cache size: 838,024 tokens
+- 22:42:12 UTC [BP_lpt] conc mixed | n4-BP_lpt | mixed | 5 users | 159.8 tok/s total | 97 req | TTFT med 0.26 s p95 6.22 s | tg/stream 34.3 | errors 0 | agent TTFT med 5.77 s | chat TTFT med 0.24 s p95 1.43 s |
+- 22:44:45 UTC [BP_lpt] conc u8-1024 | n4-BP_lpt | u8-1024 | 8 users | 390.5 tok/s total | 234 req | TTFT med 0.35 s p95 0.58 s | tg/stream 54.4 | errors 0 |
+- 22:48:31 UTC [BP_d2] up (ready after 225 s); GPU KV cache size: 838,024 tokens
+- 22:51:05 UTC [BP_d2] conc mixed | n4-BP_d2 | mixed | 5 users | 135.7 tok/s total | 84 req | TTFT med 0.26 s p95 8.9 s | tg/stream 46.9 | errors 0 | agent TTFT med 7.19 s | chat TTFT med 0.22 s p95 5.57 s |
+- 22:53:38 UTC [BP_d2] conc u8-1024 | n4-BP_d2 | u8-1024 | 8 users | 395.2 tok/s total | 237 req | TTFT med 0.35 s p95 0.67 s | tg/stream 55.2 | errors 0 |
+- 22:53:38 UTC deploy candidate: D4p16 (head=/opt/vllm-qfn/models/draft-heads/swift15-awq-lm_head-w4a16.safetensors mtp=4 pmu=16 )
+- 22:57:45 UTC [D4p16] up (ready after 246 s); GPU KV cache size: 838,024 tokens
+- 23:37:52 UTC [n4-ref] suite: bfcl n=2080 acc=0.7957 run=0.0005;evalplus n=542 acc=0.8598 run=0.0037;longctx n=180 acc=0.9833 run=0.0;
+- 23:41:40 UTC [A16] up (ready after 225 s); GPU KV cache size: 723,684 tokens
+- [A16] prefill 1K 3312 8K 5850 32K 7613 | decode-at-size 1K 143 8K 143 32K 143 | code 173.7 tok/s (accept 3.55) | edit off 264.7 / low 254.5 | func PASS | multiturn PASS
+- 00:27:34 UTC [n4-A16] suite: bfcl n=2080 acc=0.8212 run=0.0014;evalplus n=542 acc=0.8579 run=0.0018;longctx n=180 acc=0.9944 run=0.0;
+- 00:31:37 UTC [Q6X] up (ready after 240 s); GPU KV cache size: 443,413 tokens
+- [Q6X] prefill 1K 3189 8K 5761 32K 7860 | decode-at-size 1K 126 8K 139 32K 139 | code 166.8 tok/s (accept 3.53) | edit off 254.6 / low 245.4 | func PASS | multiturn PASS
+- 01:33:10 UTC [n4-Q6X] suite: bfcl n=1264 acc=0.8149 run=0.0008;evalplus n=542 acc=0.8635 run=0.0018;longctx n=180 acc=1.0 run=0.0;
+- 01:36:38 UTC [I_best] up (ready after 206 s); GPU KV cache size: 935,630 tokens
+- [I_best] prefill 1K 3002 8K 5850 32K 8240 | decode-at-size 1K 149 8K 144 32K 149 | code 160.8 tok/s (accept 3.45) | edit off 266.1 / low 256.2 | func PASS | multiturn PASS
+- 01:42:36 UTC late DFlash2 block (patch D3b lifted the Qwen4Exp spec-method guard)
+- 01:45:22 UTC [DF3] server did NOT start: (EngineCore pid=224581) ERROR 10-20 01:45:22 [multiproc_executor.py:314] Worker proc VllmWorker-1 died unexpectedly (exit code: None), shutting down executor.
+- 01:49:28 UTC [DFI] up (ready after 185 s); GPU KV cache size: 740,724 tokens
+- [DFI] prefill - | decode-at-size - | code 152.9 tok/s (accept 2.97) | edit off 189.3 / low 186.3 | quick (decode only)
+- 01:54:31 UTC Intel DFlash2 vs Intel MTP4 (report only): DFI vs I_best: code 152.9 (-4.9%), edit 189.3 (-28.9%), accept 2.97 vs 3.45
+- 01:54:32 UTC late DFlash2 block done
+- 01:54:32 UTC Intel DFlash2 vs MTP (report only): DFI vs I_best: code 152.9 (-4.9%), edit 189.3 (-28.9%), accept 2.97 vs 3.45
+- 01:58:18 UTC [K8off] up (ready after 226 s); GPU KV cache size: 1,433,217 tokens
+- 02:05:36 UTC [K8off-mt] K1 MULTITURN SOME FAILED (10 of 28; by kind {'hit': 10}) | cold controls: 12 of 12 had no prefix hit follow-up hits: 9 of 12 mid-block; offsets [0, 0, 0, 96, 112, 160, 1632, 1632, 1680, 3152, 3152, 3168]; median follow-up TTFT 0.211 s server log during the run: K1 registrations 0, K1 CoW step lines 74 (pairs 316), stale rows before copy 598, KV partial-copy warnings 0, 'NOT copied' 74, errors 0 
+- 02:05:36 UTC [K8off] server log: K1 registrations 1, CoW steps 74, NOT copied 74, partial copies 0, tracebacks 0
+- 02:09:17 UTC [K8dbg] up (ready after 221 s); GPU KV cache size: 1,433,217 tokens
+- 02:10:28 UTC [K8dbg-mt] K1 MULTITURN ALL PASS | cold controls: 12 of 12 had no prefix hit follow-up hits: 10 of 12 mid-block; offsets [0, 0, 32, 96, 112, 160, 1632, 1632, 1680, 3152, 3152, 3168]; median follow-up TTFT 0.2 s server log during the run: K1 registrations 0, K1 CoW step lines 74 (pairs 316), stale rows before copy 442, KV partial-copy warnings 0, 'NOT copied' 0, errors 0 
+- 02:10:34 UTC [K8dbg-fan] K1 FANOUT ALL PASS | server log during the run: K1 registrations 0, K1 CoW step lines 20 (pairs 224), stale rows before copy 1768, KV partial-copy warnings 0, 'NOT copied' 0, errors 0 
+- 02:10:34 UTC [K8dbg] server log: K1 registrations 1, CoW steps 94, NOT copied 0, partial copies 0, tracebacks 0
+- 02:14:20 UTC [K8] up (ready after 225 s); GPU KV cache size: 1,433,217 tokens
+- 02:14:39 UTC [K8-first] K1 FIRSTBATCH ALL PASS | server log during the run: K1 registrations 0, K1 CoW step lines 2 (pairs 8), stale rows before copy n/a (VLLM_K1_DEBUG off), KV partial-copy warnings 0, 'NOT copied' 0, errors 0 
+- 02:16:50 UTC [K8-mt] K1 MULTITURN ALL PASS | cold controls: 24 of 24 had no prefix hit follow-up hits: 22 of 24 mid-block; offsets [0, 0, 32, 32, 64, 96, 96, 112, 112, 160, 160, 192, 192, 1616, 1632, 1632, 1648, 1680, 1680, 1680, 1712, 3152, 3152, 3168]; median follow-up TTFT 0.172 s server log during the run: K1 registrations 0, K1 CoW step lines 2 (pairs 8), stale rows before copy n/a (VLLM_K1_DEBUG off), KV partial-copy warnings 0, 'NOT copied' 0, errors 0 
+- 02:20:58 UTC [K8-churn] K1 PRESSURE ALL PASS | [pressure] peak KV usage 17.0%, preemptions +0 server log during the run: K1 registrations 0, K1 CoW step lines 4 (pairs 16), stale rows before copy n/a (VLLM_K1_DEBUG off), KV partial-copy warnings 0, 'NOT copied' 0, errors 0 
+- [K8] prefill 1K 3738 8K 6062 32K 7583 | decode-at-size 1K 157 8K 155 32K 153 | code 190.4 tok/s (accept 3.49) | edit off 302.6 / low 282.1 | func PASS | multiturn PASS
+- 02:26:48 UTC [K8] server log: K1 registrations 1, CoW steps 10, NOT copied 0, partial copies 0, tracebacks 0
+- 02:34:15 UTC [n4-K8] suite: longctx n=180 acc=0.9833 run=0.0;
+- 02:38:07 UTC [D4p16] up (ready after 231 s); GPU KV cache size: 838,024 tokens
+- 02:55:43 UTC [n4-terse] suite: bfcl n=1040 acc=0.8154 run=0.001;evalplus n=542 acc=0.8579 run=0.0;
+- 02:55:49 UTC [host] clocks: 02:55:47 reset: All done. 
+- 02:55:49 UTC deploying D4p16 (code/edit gain +0.186 vs T0)
+- 02:55:49 UTC [deploy] DFlash2 retry before the deploy (patch D3c)
+- 02:56:04 UTC late DFlash2 block (patch D3b lifted the Qwen4Exp spec-method guard)
+- 02:59:25 UTC [DF3] up (ready after 201 s); GPU KV cache size: 824,073 tokens
+- 02:59:25 UTC [DF3] tap: 2 rank lines; target embed_tokens is loaded; Eagle3 auxiliary layers from config: (6, 16, 26, 36, 46); draft graphs: 2
+- [DF3] prefill 1K 2482 8K 5842 32K 7492 | decode-at-size 1K 158 8K 141 32K 138 | code 178.2 tok/s (accept 3.02) | edit off 214.7 / low 212.0 | func PASS | multiturn PASS
+- 03:06:38 UTC greedy identity T0 vs DF3: 6/16 identical; first difference at chars [178, 227, 401, 33, 215, 102, 40, 625, 547, 253]
+- 03:07:07 UTC [DF3] T1 rc=0:  PASS: 21 parallel streams kept speculative decoding (baseline 2.50 tokens/step) 
+- 03:07:07 UTC DFlash2 vs MTP4 winner (report only): DF3 vs D4p16: code 178.2 (-7.9%), edit 214.7 (-29.3%), accept 3.02 vs 3.51 | vs baseline MTP3+ngram: DF3 vs T0: code 178.2 (+5.8%), edit 214.7 (-13.4%), accept 3.02 vs 3.12
+- 03:10:28 UTC [DF4] up (ready after 200 s); GPU KV cache size: 804,967 tokens
+- [DF4] prefill - | decode-at-size - | code 189.0 tok/s (accept 3.31) | edit off 231.9 / low 229.1 | quick (decode only)
+- 03:14:43 UTC DFlash2 4 drafts vs MTP4 winner (report only): DF4 vs D4p16: code 189.0 (-2.4%), edit 231.9 (-23.6%), accept 3.31 vs 3.51
+- 03:14:47 UTC late DFlash2 block done
+- 03:15:07 UTC [deploy] clocks after the DFlash2 retry: 03:15:02 reset: All done. 
+- 03:15:07 UTC [deploy] quality guard: OK bfcl 0.7957 (night 3 0.8034); evalplus 0.8598 (night 3 0.8653); longctx 0.9833 (night 3 0.9722)
+- 03:15:07 UTC [deploy] new production profile: venv=n4 head=/opt/vllm-qfn/models/draft-heads/swift15-awq-lm_head-w4a16.safetensors mtp=4 pmu=16 
+- 03:18:42 UTC [deploy] 8080 healthy with D4p16
+- 03:18:56 UTC [deploy] prod_check: PROD ALL PASS
+- 03:20:10 UTC [deploy] func_check: FUNC ALL PASS
+- 03:20:23 UTC [deploy] multiturn: prefix cache: 228,784 of 288,629 queried tokens were hits (79%) MULTITURN ALL PASS 
+- 03:20:46 UTC [deploy] feature check on 8080: FEATURES: 29/29 pass; fails: 
+- 03:22:16 UTC [deploy] code decode on 8080: | N4-prod | decode tok/s median 201.6 (min 176.5, max 215.9) | mean acceptance length 3.62 | 9216 tokens |
+- 03:22:16 UTC [deploy] speed on 8080 (median, vs night 3): 4096: pp 4944 (100%) tg 149 (100%); 32768: pp 7838 (101%) tg 156 (102%)
+- 03:22:16 UTC [deploy] DEPLOYED D4p16
+- 03:22:16 UTC production 8080: 200
+- 03:22:16 UTC DONE
+- 03:22:36 UTC [host] clocks: 03:22:32 reset: All done. 

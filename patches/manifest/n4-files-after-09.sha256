@@ -1,0 +1,4 @@
+30725da6f4ef334a0589a79dd836e40628dc6f63462f22bbacdcda7164336a81  vllm/models/qwen4_exp/nvidia/mtp.py
+805348a68e458f3fe0390ca41620960945bf0ff3ec6ac0373dc2d9a8dee72210  vllm/v1/core/sched/scheduler.py
+20f486b34cc68e6eb8472fa39de29211d0e22b2ab503f692d4a2280d6e5220c8  vllm/v1/spec_decode/llm_base_proposer.py
+8c40345e92a2d03f32002b624dfba437bf8be9d4b90ccbf4a6cfaa02b00fbf89  vllm/v1/worker/gpu/spec_decode/eagle/utils.py

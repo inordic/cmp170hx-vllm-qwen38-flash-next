@@ -1,0 +1,10 @@
+{
+ "name": "DFI",
+ "perf_error": "[Errno 2] No such file or directory: '/root/tune/exact-n4-DFI.json'",
+ "code": 152.9,
+ "accept": 2.974185221039045,
+ "edit_off": 189.3,
+ "edit_low": 186.3,
+ "func_ok": false,
+ "multi_ok": false
+}

@@ -1,0 +1,21 @@
+[pressure] pool 1,433,217 tokens -> 53 unique prompts x 32,000 tokens (1.18x pool), 8 at a time
+[pressure] conv 0 turn 1 first: prompt 18,735 TTFT 2.686s think 181 ch, finish stop, answer '843957' -> PASS
+[pressure] conv 1 turn 1 first: prompt 21,712 TTFT 2.829s think 178 ch, finish stop, answer '117360' -> PASS
+[pressure] conv 2 turn 1 first: prompt 18,460 TTFT 2.633s think 133 ch, finish stop, answer '975196' -> PASS
+[pressure] conv 3 turn 1 first: prompt 19,703 TTFT 3.207s think 119 ch, finish stop, answer '949210' -> PASS
+[pressure] conv 0 turn 2 during-flood: prompt 18,765 TTFT 25.742s think 152 ch, finish stop, answer '200590' -> PASS
+[pressure] conv 1 turn 2 during-flood: prompt 21,742 TTFT 30.888s think 103 ch, finish stop, answer '723724' -> PASS
+[pressure] conv 2 turn 2 during-flood: prompt 18,490 TTFT 24.381s think 101 ch, finish stop, answer '882296' -> PASS
+[pressure] conv 3 turn 2 during-flood: prompt 19,733 TTFT 31.527s think 83 ch, finish stop, answer '215369' -> PASS
+[pressure] conv 0 turn 3 during-flood: prompt 18,796 TTFT 31.199s think 102 ch, finish stop, answer '487825' -> PASS
+[pressure] conv 1 turn 3 during-flood: prompt 21,773 TTFT 30.984s think 109 ch, finish stop, answer '704155' -> PASS
+[pressure] conv 2 turn 3 during-flood: prompt 18,521 TTFT 2.581s think 150 ch, finish stop, answer '527856' -> PASS
+[pressure] conv 3 turn 3 during-flood: prompt 19,764 TTFT 0.159s think 85 ch, finish stop, answer '639157' -> PASS
+[pressure] conv 0 turn 4 after-flood: prompt 18,826 TTFT 0.168s think 83 ch, finish stop, answer '105644' -> PASS
+[pressure] conv 1 turn 4 after-flood: prompt 21,803 TTFT 0.176s think 134 ch, finish stop, answer '187647' -> PASS
+[pressure] conv 2 turn 4 after-flood: prompt 18,551 TTFT 0.154s think 130 ch, finish stop, answer '306110' -> PASS
+[pressure] conv 3 turn 4 after-flood: prompt 19,794 TTFT 0.16s think 83 ch, finish stop, answer '678609' -> PASS
+[pressure] peak KV usage 17.0%, preemptions +0
+prefix cache: 151,680 of 2,048,144 queried tokens were hits
+server log during the run: K1 registrations 0, K1 CoW step lines 4 (pairs 16), stale rows before copy n/a (VLLM_K1_DEBUG off), KV partial-copy warnings 0, 'NOT copied' 0, errors 0
+K1 PRESSURE ALL PASS

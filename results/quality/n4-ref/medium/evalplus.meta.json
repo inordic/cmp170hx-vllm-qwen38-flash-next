@@ -1,0 +1,163 @@
+{
+ "bench": "evalplus",
+ "start": "2026-10-19T23:23:13",
+ "cfg": {
+  "endpoint": "http://127.0.0.1:8008",
+  "model": "qwen3.8-flash-next",
+  "insecure": false,
+  "tag": "n4-ref",
+  "effort": "medium",
+  "effort_mode": "kwargs",
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 0.0,
+  "seed_base": 1234,
+  "use_seed": true,
+  "order_seed": 7,
+  "max_tokens": 16384,
+  "stream": true,
+  "extra_body": null,
+  "history_reasoning": "both",
+  "concurrency": 16,
+  "read_timeout": 1800,
+  "retries": 3,
+  "exec_timeout": null
+ },
+ "n_items": 542,
+ "repeats": 1,
+ "budget_min": 18.0,
+ "argv": [
+  "run",
+  "--bench",
+  "evalplus",
+  "--endpoint",
+  "http://127.0.0.1:8008",
+  "--model",
+  "qwen3.8-flash-next",
+  "--tag",
+  "n4-ref",
+  "--effort",
+  "medium",
+  "--temperature",
+  "1.0",
+  "--top-p",
+  "0.95",
+  "--top-k",
+  "20",
+  "--out",
+  "/root/qeval/results",
+  "--concurrency",
+  "16",
+  "--budget-min",
+  "18"
+ ],
+ "models": {
+  "object": "list",
+  "data": [
+   {
+    "id": "qwen3.8-flash-next",
+    "object": "model",
+    "created": 1792452193,
+    "owned_by": "vllm",
+    "root": "/opt/vllm-qfn/models/swift15-awq",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-ab92be993cc5321f",
+      "object": "model_permission",
+      "created": 1792452193,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   },
+   {
+    "id": "swift-1.5-awq",
+    "object": "model",
+    "created": 1792452193,
+    "owned_by": "vllm",
+    "root": "/opt/vllm-qfn/models/swift15-awq",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-9984b866fcee538b",
+      "object": "model_permission",
+      "created": 1792452193,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   },
+   {
+    "id": "Qwen3.8-Flash-Next-AWQ-INT4",
+    "object": "model",
+    "created": 1792452193,
+    "owned_by": "vllm",
+    "root": "/opt/vllm-qfn/models/swift15-awq",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-a6f6046e53faecd4",
+      "object": "model_permission",
+      "created": 1792452193,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   },
+   {
+    "id": "swift-1.5-iq3_xxs",
+    "object": "model",
+    "created": 1792452193,
+    "owned_by": "vllm",
+    "root": "/opt/vllm-qfn/models/swift15-awq",
+    "parent": null,
+    "max_model_len": 262144,
+    "permission": [
+     {
+      "id": "modelperm-b8d5e7090cedd3a4",
+      "object": "model_permission",
+      "created": 1792452193,
+      "allow_create_engine": false,
+      "allow_sampling": true,
+      "allow_logprobs": true,
+      "allow_search_indices": false,
+      "allow_view": true,
+      "allow_fine_tuning": false,
+      "organization": "*",
+      "group": null,
+      "is_blocking": false
+     }
+    ]
+   }
+  ]
+ },
+ "end": "2026-10-19T23:31:10",
+ "wall_s": 477.2
+}

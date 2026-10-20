@@ -1,0 +1,2 @@
+| n4-DFI | code edit, thinking off | decode tok/s median 189.3 (min 187.2, max 192.5) |
+| n4-DFI | code edit, thinking low | decode tok/s median 186.3 (min 185.6, max 189.8) |

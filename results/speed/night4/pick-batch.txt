@@ -1,0 +1,3 @@
+B3296: prefill 7957 (+0.4%), code decode 97%
+B4896: prefill 8133 (+2.6%), code decode 98%
+PICK SW0

@@ -1,0 +1,2 @@
+| n4-PRn | code edit, thinking off | decode tok/s median 303.6 (min 302.2, max 306.7) |
+| n4-PRn | code edit, thinking low | decode tok/s median 291.3 (min 287.5, max 293.7) |

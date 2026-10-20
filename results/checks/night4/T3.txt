@@ -1,0 +1,11 @@
+p=[0.1, 0.45, 0.45] q=[0.8, 0.19, 0.01] shared: TV=0.0629 chi2 p=0 outside=0  biased (expected: shows the test detects shared noise)
+p=[0.1, 0.45, 0.45] q=[0.8, 0.19, 0.01] tree  : TV=0.0013 chi2 p=0.00117 outside=0  ok
+p=[0.1, 0.45, 0.45] q=[0.8, 0.19, 0.01] c3    : TV=0.0012 chi2 p=0.00345 outside=0  ok
+p=[0.2, 0.4, 0.4] q=[0.6, 0.3, 0.1] shared: TV=0.0453 chi2 p=0 outside=0  biased (expected: shows the test detects shared noise)
+p=[0.2, 0.4, 0.4] q=[0.6, 0.3, 0.1] tree  : TV=0.0005 chi2 p=0.289 outside=0  ok
+p=[0.2, 0.4, 0.4] q=[0.6, 0.3, 0.1] c3    : TV=0.0008 chi2 p=0.0678 outside=0  ok
+p=[0.05, 0.5, 0.3, 0.15] q=[0.7, 0.25, 0.04, 0.01] shared: TV=0.0659 chi2 p=0 outside=0  biased (expected: shows the test detects shared noise)
+p=[0.05, 0.5, 0.3, 0.15] q=[0.7, 0.25, 0.04, 0.01] tree  : TV=0.0008 chi2 p=0.093 outside=0  ok
+p=[0.05, 0.5, 0.3, 0.15] q=[0.7, 0.25, 0.04, 0.01] c3    : TV=0.0011 chi2 p=0.00589 outside=0  ok
+c1: gather_draft_sampled -> [5, 6, 7, 8, 9, -1, -1, -1]  ok
+RESULT: PASS

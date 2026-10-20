@@ -1,0 +1,27 @@
+model qwen3.8-flash-next; one-token prompt = [760] ('The'); background streams: 6
+  trial  1: ok   text=' top <legend> technical layout of the' first=token_id:1844
+  trial  2: ok   text=' cicles theydp illustrating the \n\n' first=token_id:272
+  trial  3: ok   text=' building(fornuffiddm attached by' first=token_id:4599
+  trial  4: ok   text=' article aims to provides to new cam mee' first=token_id:4400
+  trial  5: ok   text='GgGNAN...>...' first=token_id:38
+  trial  6: ok   text="再起\n маги. Given's given" first=token_id:135535
+  trial  7: ok   text='StBoS discharged,powered,powed' first=token_id:608
+  trial  8: ok   text='TheTheNoTheNoTheNoThe' first=token_id:760
+  trial  9: ok   text='(samples.月 The test pr_Proc' first=token_id:65950
+  trial 10: ok   text=' And The Functions The Son The Orders Th' first=token_id:1541
+  trial 11: ok   text='\n目的：·\n\n\n' first=token_id:198
+  trial 12: ok   text='MarThearThe arThe煤The' first=token_id:11718
+  trial 13: ok   text='' first=token_id:248044
+  trial 14: ok   text=' oooongooongonxoong' first=token_id:296
+  trial 15: ok   text=' guide:1:1:11' first=token_id:8214
+  trial 16: ok   text='\u200b<aoadsArtConsK' first=token_id:15231
+  trial 17: ok   text=':The:The:The:No' first=token_id:25
+  trial 18: ok   text='。\n\n' first=token_id:1710
+  trial 19: ok   text=':No:No:No:No' first=token_id:25
+  trial 20: ok   text=' stj.st.st.st.st.st.st.st' first=token_id:238248
+  trial 21: ok   text='\n\nThe\n\nThe\n\nThe\n\nThe' first=token_id:271
+  trial 22: ok   text='TheTheTheRoO' first=token_id:760
+  trial 23: ok   text='\n1\n1\n1\n' first=token_id:198
+  trial 24: ok   text='\nThe\nThe\nThe\nThe' first=token_id:198
+
+24/24 trials OK; first token '!' in 0/24 (a high rate with top_p=1/top_k=-1 points at accepted placeholder drafts, i.e. C1 missing)

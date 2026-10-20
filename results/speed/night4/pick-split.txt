@@ -1,0 +1,2 @@
+S26: prefill 7692 (-3.0%), code decode 97%
+PICK SW0

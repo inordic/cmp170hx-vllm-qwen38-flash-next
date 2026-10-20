@@ -1,0 +1,2 @@
+| n4-I_best | code edit, thinking off | decode tok/s median 266.1 (min 263.8, max 268.0) |
+| n4-I_best | code edit, thinking low | decode tok/s median 256.2 (min 253.4, max 260.4) |

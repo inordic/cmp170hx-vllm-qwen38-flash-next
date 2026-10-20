@@ -1,0 +1,27 @@
+model qwen3.8-flash-next; one-token prompt = [760] ('The'); background streams: 6
+  trial  1: ok   text='PhilosophicalThe technical technical tec' first=token_id:28623
+  trial  2: ok   text=' 2023 convention guarantees the' first=token_id:220
+  trial  3: ok   text='"\n\n#eh);}llhll' first=token_id:1
+  trial  4: ok   text='E，int，ot，g，' first=token_id:36
+  trial  5: ok   text='ed？\n\n我给您给我的\n\nlist' first=token_id:290
+  trial  6: ok   text='\nUser\n' first=token_id:198
+  trial  7: ok   text=' first The\n\na described À\n\n==' first=token_id:1118
+  trial  8: ok   text=' mod :...' first=token_id:1410
+  trial  9: ok   text=' o o o o\n\n' first=token_id:296
+  trial 10: ok   text='\n' first=token_id:198
+  trial 11: ok   text='.Int.No.mount.co.low.label.visibility...' first=token_id:7137
+  trial 12: ok   text=' \nThe \nThe \nThe \nThe' first=token_id:695
+  trial 13: ok   text='编辑\n\n' first=token_id:98428
+  trial 14: ok   text=' ooooooooooooooo' first=token_id:296
+  trial 15: ok   text='\n高\n科\n' first=token_id:198
+  trial 16: ok   text='O\n\tmov\n  o\n   ' first=token_id:46
+  trial 17: ok   text=' The\n</think>\n\n Bündnis\n</think>' first=token_id:561
+  trial 18: ok   text='。。;R。' first=token_id:1710
+  trial 19: ok   text='\n"""\n请在 Rec B C A' first=token_id:198
+  trial 20: ok   text=' stj\nBo\nBo\nBo\n' first=token_id:238248
+  trial 21: ok   text='\n\n##\n\n##\n\nf' first=token_id:271
+  trial 22: ok   text=' \n\n' first=token_id:4558
+  trial 23: ok   text='' first=token_id:248044
+  trial 24: ok   text='' first=token_id:248044
+
+24/24 trials OK; first token '!' in 0/24 (a high rate with top_p=1/top_k=-1 points at accepted placeholder drafts, i.e. C1 missing)

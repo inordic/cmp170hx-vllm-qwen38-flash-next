@@ -1,6 +1,6 @@
 # Build: from two CMP 170HX cards to a running server
 
-This is the route we took. The paths are ours: `/opt/vllm-qfn` for the build, and `/opt/vllm-qfn-exp` for the patched tree that production runs. Adjust them to your system. Each step says how to check it before you go on.
+This is the route we took. The paths are ours: `/opt/vllm-qfn` for the build and the models, and `/opt/vllm-qfn-n4` for the patched tree that production runs since 2026-10-20 (until then `/opt/vllm-qfn-exp`, the tree with patches 01–07). Adjust them to your system. Each step says how to check it before you go on.
 
 ## 0. Hardware and host
 
@@ -42,34 +42,45 @@ Follow [2dameneko/vllm-Qwen3.8-Flash-Next-2xCMP170HX](https://github.com/2damene
 
 ## 3. Our patches
 
-Copy that tree (we keep production and experiments apart), then apply [`patches/`](patches/) in order:
+Copy that tree (we keep production and experiments apart), then apply [`patches/`](patches/) in order, 01 to 18 (there is no 14):
 
 ```bash
 REPO=/path/to/cmp170hx-vllm-qwen38-flash-next     # this repository
-cd /opt/vllm-qfn-exp/src                           # the copied, 2dameneko-patched tree
+cd /opt/vllm-qfn-n4/src                            # the copied, 2dameneko-patched tree
 for p in "$REPO"/patches/0[1-4]-*.patch; do git apply -p1 --check "$p" && git apply -p1 "$p"; done
 git apply -p1 "$REPO/patches/05-auth-x-api-key.patch"
 python3 "$REPO/patches/06-A1-thinking-off-consistency.py" "$PWD"
 python3 "$REPO/patches/07-A2-history-reasoning-fields.py" "$PWD"
+# night 4 (08-18, no 14): D1, D2, K1, C1, C2, C5, C4, D3, then the two inline fixes D3b and D3c
+for p in "$REPO"/patches/0[89]-*.py "$REPO"/patches/1[0-6]-*.py; do python3 "$p" "$PWD" || break; done
+for p in "$REPO"/patches/1[78]-*.patch; do git apply -p1 --check "$p" && git apply -p1 "$p"; done
 ```
 
-[`patches/README.md`](patches/README.md) explains every patch.
+[`patches/README.md`](patches/README.md) explains every patch, says which ones are active in production and which only act when their switch is set, and what each was tested with.
 
-**Check:** `sha256sum -c patches/manifest/backport-files-after-04.sha256` passes after patch 04 (run in the tree root). Patches 05–07 are checked by their own anchors: each refuses to apply twice or to a different tree.
+**Check:**
+- `sha256sum -c patches/manifest/backport-files-after-04.sha256` passes after patch 04 (run in the tree root). Patches 05–07 are checked by their own anchors: each refuses to apply twice or to a different tree.
+- `sha256sum -c patches/manifest/n4-files-before-08.sha256` passes before patch 08, and `sha256sum -c patches/manifest/n4-files-after-18.sha256` after patch 18. Our production tree also contains patch C3, which is not published and is off; it differs from yours only in `speculator.py` and `model_runner.py` ([`patches/README.md`](patches/README.md), `n4-production-with-unpublished-C3.sha256`).
 
-Then build the venv with [`patches/make-venv.sh`](patches/make-venv.sh). It installs the precompiled `a5a30471` wheel and torch 2.13 cu130, then the tree in editable mode, so nothing is compiled.
+Then build the venv with [`patches/make-venv.sh`](patches/make-venv.sh) (`make-venv.sh /opt/vllm-qfn-n4 n4`, the default). It installs the precompiled `a5a30471` wheel and torch 2.13 cu130, then the tree in editable mode, so nothing is compiled.
 
 **Check:** the venv's Python prints `0.29.1rc1.dev402+ga5a30471f…` for `vllm.__version__`.
 
-## 4. Model and template
+## 4. Model, template and draft head
 
 1. Download [`ukisai/Swift-1.5-Qwen3.8-Flash-Next-W4A16-AWQ`](https://huggingface.co/ukisai/Swift-1.5-Qwen3.8-Flash-Next-W4A16-AWQ) (we run revision `598afc96`, 166 GB) to the NVMe.
 2. Check the files with [`scripts/verify_model.py`](scripts/verify_model.py).
 3. Get the chat template `qwen-asgard-v1.jinja` from [qwen-asgard-jinja](https://github.com/leonbollerup/qwen-asgard-jinja).
+4. Make the int4 draft head for patch 08 with [`tools/models/quantize_lm_head.py`](tools/models/) (CPU only, about 15 s; [`tools/models/make-heads.sh`](tools/models/make-heads.sh) does it for both of our checkpoints):
+   ```bash
+   /opt/vllm-qfn-n4/.venv/bin/python tools/models/quantize_lm_head.py --model-dir /opt/vllm-qfn/models/swift15-awq \
+       --out /opt/vllm-qfn/models/draft-heads/swift15-awq-lm_head-w4a16.safetensors --mse-scale-search
+   ```
+   **Check:** the script prints the file's size and sha256. Ours is 330,265,872 bytes with sha256 `5c5461d7…`.
 
 ## 5. Serve
 
-1. Put [`config/qfn-prod.env`](config/qfn-prod.env) next to 2dameneko's `serve/serve.sh`, and set the paths in it: venv, model, `PLE_SSD_LIB`, template, API key file.
+1. Put [`config/qfn-prod.env`](config/qfn-prod.env) next to 2dameneko's `serve/serve.sh`, and set the paths in it: venv, model, `PLE_SSD_LIB`, template, API key file, and the draft head in `VLLM_MTP_DRAFT_HEAD_PATH`.
 2. Install [`config/vllm-qfn.service`](config/vllm-qfn.service), which runs `serve.sh` with `RUN_ENV` pointing at the profile.
 3. Install [`config/vllm-qfn.logrotate`](config/vllm-qfn.logrotate).
 
@@ -88,9 +99,9 @@ Then measure. [`bench/perf_exact.py`](bench/perf_exact.py) gives exact-length pr
 | Setting | Why |
 |---|---|
 | `PLE_SSD_WORKERS=32`, `PLE_SSD_IO_DEPTH=512`, `PLE_SSD_PREFETCH=131072`, `PLE_SSD_CACHE_MB=16384` | the biggest prefill lever: 128K went from 5.9K to 8.3K tok/s |
-| `MTP=0` plus `--speculative-config {"method":"mtp","num_speculative_tokens":3,"ngram_lookup":true}` | +15% on code editing from the n-gram lookup |
-| `--prefix-match-unit 32 --enable-mamba-fine-grained-prefix-cache` | multi-turn follow-ups reuse the cache |
+| `MTP=0` plus `--speculative-config {"method":"mtp","num_speculative_tokens":4,"ngram_lookup":true}` and `VLLM_MTP_DRAFT_HEAD_PATH` (patch 08) | night 4: +15% code and +22% code-edit decode over MTP 3 with the BF16 head (clocks locked at 1440 MHz). The n-gram lookup alone gave +15% on code editing in night 2 |
+| `--prefix-match-unit 16 --enable-mamba-fine-grained-prefix-cache` | multi-turn follow-ups reuse the cache. With 4 draft tokens the attention block is 1616 tokens, which 32 does not divide, so MTP 4 needs 16 |
 | `MAX_NUM_SEQS=24` + the extended `CAPTURE_SIZES` | 16 users at 504 tok/s, single-user speed unchanged |
-| BF16 KV | INT8 KV is broken with prefix-cache follow-ups + MTP + `--prefix-match-unit 32` |
+| BF16 KV | INT8 KV was broken with prefix-cache follow-ups + MTP + a fine `--prefix-match-unit`. Patch 10 (K1) fixes it: +71% KV pool for −1.6% decode in night 4. Production stays on BF16 until night 5's full-pool test |
 | `VLLM_PLE_NONPLE_LOADER=instanttensor` | faster engine start: 2dameneko measured 680 s → 150–166 s with their patch 06 |
 | `CUDA_DEVICES=1,0`, `VLLM_PP_LAYER_PARTITION=24,24` | 24/24 with BF16 KV was fastest on long prompts |

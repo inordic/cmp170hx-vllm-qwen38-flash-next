@@ -1,0 +1,27 @@
+model qwen3.8-flash-next; one-token prompt = [760] ('The'); background streams: 6
+  trial  1: ok   text=' user has informed the user that your mi' first=token_id:1156
+  trial  2: ok   text='' first=token_id:248044
+  trial  3: ok   text='ee222222' first=token_id:68
+  trial  4: ok   text='' first=token_id:248044
+  trial  5: ok   text='11111111' first=token_id:16
+  trial  6: ok   text='' first=token_id:248046
+  trial  7: ok   text='17777777' first=token_id:16
+  trial  8: ok   text='TheCim' first=token_id:760
+  trial  9: ok   text=' Q:QQQQ:Q' first=token_id:1167
+  trial 10: ok   text='' first=token_id:248046
+  trial 11: ok   text='.Int:`:`:`:`:\n\n' first=token_id:7137
+  trial 12: ok   text='.' first=token_id:13
+  trial 13: ok   text='' first=token_id:248044
+  trial 14: ok   text='' first=token_id:248044
+  trial 15: ok   text='\nAn\nS\nS\nS' first=token_id:198
+  trial 16: ok   text='' first=token_id:248044
+  trial 17: ok   text=' The I e e e e e e' first=token_id:561
+  trial 18: ok   text=' ...' first=token_id:2423
+  trial 19: ok   text='a' first=token_id:64
+  trial 20: ok   text='' first=token_id:248044
+  trial 21: ok   text='分支我自\n弓\n步\n步行' first=token_id:104902
+  trial 22: ok   text=' Mom' first=token_id:21492
+  trial 23: ok   text='\nto N b\nof Me\n' first=token_id:198
+  trial 24: ok   text=' The The The The The The The The' first=token_id:561
+
+24/24 trials OK; first token '!' in 0/24 (a high rate with top_p=1/top_k=-1 points at accepted placeholder drafts, i.e. C1 missing)

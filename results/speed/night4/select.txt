@@ -1,0 +1,3 @@
+D3: score 214.5 (+4.9% vs T0), prefill ok True
+D4p16: score 242.4 (+18.6% vs T0), prefill ok True
+BEST D4p16 242.4 +0.186

@@ -1,0 +1,37 @@
+[multiturn] conv 0: turn-1 prompt 22,530 tokens, 130 into a 3200-token block
+[multiturn] conv 0 turn 1 first: prompt 22,530 TTFT 3.078s hit 0 (offset 0) think 133 ch, finish stop, answer '459484' -> PASS
+[multiturn] conv 0 turn 2 hit: prompt 22,560 TTFT 0.866s hit 19,296 (offset 96 MID-BLOCK) think 111 ch, finish stop, answer '641908' -> PASS
+[multiturn] conv 0 turn 2 cold: prompt 22,578 TTFT 2.974s hit 0 (offset 0) think 82 ch, finish stop, answer '641908' -> PASS
+[multiturn] conv 0 turn 3 hit: prompt 22,590 TTFT 0.165s hit 22,512 (offset 112 MID-BLOCK) think 102 ch, finish stop, answer '651431' -> PASS
+[multiturn] conv 0 turn 3 cold: prompt 22,608 TTFT 2.968s hit 0 (offset 0) think 130 ch, finish stop, answer '651431' -> PASS
+[multiturn] conv 0 turn 4 hit: prompt 22,620 TTFT 0.195s hit 22,560 (offset 160 MID-BLOCK) think 489 ch, finish stop, answer '' -> FAIL (want 816502)
+[multiturn] conv 0 turn 4 cold: prompt 22,638 TTFT 2.97s hit 0 (offset 0) think 104 ch, finish stop, answer '816502' -> PASS
+[multiturn] conv 1: turn-1 prompt 30,450 tokens, 1650 into a 3200-token block
+[multiturn] conv 1 turn 1 first: prompt 30,450 TTFT 4.057s hit 0 (offset 0) think 133 ch, finish stop, answer '390350' -> PASS
+[multiturn] conv 1 turn 2 hit: prompt 30,480 TTFT 0.217s hit 30,432 (offset 1632 MID-BLOCK) think 7861 ch, finish stop, answer '' -> FAIL (want 128936)
+[multiturn] conv 1 turn 2 cold: prompt 30,498 TTFT 3.938s hit 0 (offset 0) think 82 ch, finish stop, answer '128936' -> PASS
+[multiturn] conv 1 turn 3 hit: prompt 30,504 TTFT 0.211s hit 30,432 (offset 1632 MID-BLOCK) think 7264 ch, finish stop, answer '' -> FAIL (want 282994)
+[multiturn] conv 1 turn 3 cold: prompt 30,522 TTFT 3.913s hit 0 (offset 0) think 134 ch, finish stop, answer '282994' -> PASS
+[multiturn] conv 1 turn 4 hit: prompt 30,528 TTFT 0.223s hit 30,480 (offset 1680 MID-BLOCK) think 5564 ch, finish stop, answer '' -> FAIL (want 393936)
+[multiturn] conv 1 turn 4 cold: prompt 30,546 TTFT 3.95s hit 0 (offset 0) think 141 ch, finish stop, answer '393936' -> PASS
+[multiturn] conv 2: turn-1 prompt 25,570 tokens, 3170 into a 3200-token block
+[multiturn] conv 2 turn 1 first: prompt 25,570 TTFT 3.299s hit 0 (offset 0) think 170 ch, finish stop, answer '369804' -> PASS
+[multiturn] conv 2 turn 2 hit: prompt 25,600 TTFT 0.221s hit 25,552 (offset 3152 MID-BLOCK) think 1208 ch, finish stop, answer '' -> FAIL (want 918205)
+[multiturn] conv 2 turn 2 cold: prompt 25,618 TTFT 3.367s hit 0 (offset 0) think 82 ch, finish stop, answer '918205' -> PASS
+[multiturn] conv 2 turn 3 hit: prompt 25,624 TTFT 0.211s hit 25,552 (offset 3152 MID-BLOCK) think 10162 ch, finish length, answer '' -> FAIL (want 735986)
+[multiturn] conv 2 turn 3 cold: prompt 25,642 TTFT 3.355s hit 0 (offset 0) think 168 ch, finish stop, answer '735986' -> PASS
+[multiturn] conv 2 turn 4 hit: prompt 25,648 TTFT 0.22s hit 25,600 (offset 0) think 2420 ch, finish stop, answer '' -> FAIL (want 181986)
+[multiturn] conv 2 turn 4 cold: prompt 25,666 TTFT 3.343s hit 0 (offset 0) think 172 ch, finish stop, answer '181986' -> PASS
+[multiturn] conv 3: turn-1 prompt 22,395 tokens, 3195 into a 3200-token block
+[multiturn] conv 3 turn 1 first: prompt 22,395 TTFT 3.097s hit 0 (offset 0) think 202 ch, finish stop, answer '977373' -> PASS
+[multiturn] conv 3 turn 2 hit: prompt 22,425 TTFT 0.19s hit 22,368 (offset 3168 MID-BLOCK) think 5746 ch, finish stop, answer '' -> FAIL (want 842784)
+[multiturn] conv 3 turn 2 cold: prompt 22,443 TTFT 3.025s hit 0 (offset 0) think 82 ch, finish stop, answer '842784' -> PASS
+[multiturn] conv 3 turn 3 hit: prompt 22,449 TTFT 0.188s hit 22,400 (offset 0) think 11730 ch, finish length, answer '' -> FAIL (want 289875)
+[multiturn] conv 3 turn 3 cold: prompt 22,467 TTFT 3.01s hit 0 (offset 0) think 113 ch, finish stop, answer '289875' -> PASS
+[multiturn] conv 3 turn 4 hit: prompt 22,473 TTFT 0.186s hit 22,400 (offset 0) think 11713 ch, finish length, answer '' -> FAIL (want 932825)
+[multiturn] conv 3 turn 4 cold: prompt 22,491 TTFT 3.045s hit 0 (offset 0) think 332 ch, finish stop, answer '932825' -> PASS
+cold controls: 12 of 12 had no prefix hit
+follow-up hits: 9 of 12 mid-block; offsets [0, 0, 0, 96, 112, 160, 1632, 1632, 1680, 3152, 3152, 3168]; median follow-up TTFT 0.211 s
+prefix cache: 299,584 of 708,163 queried tokens were hits
+server log during the run: K1 registrations 0, K1 CoW step lines 74 (pairs 316), stale rows before copy 598, KV partial-copy warnings 0, 'NOT copied' 74, errors 0
+K1 MULTITURN SOME FAILED (10 of 28; by kind {'hit': 10})

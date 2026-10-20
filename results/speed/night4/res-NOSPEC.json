@@ -1,0 +1,10 @@
+{
+ "name": "NOSPEC",
+ "perf_error": "[Errno 2] No such file or directory: '/root/tune/exact-n4-NOSPEC.json'",
+ "code": 83.0,
+ "accept": 1.0,
+ "edit_off": 83.9,
+ "edit_low": 83.8,
+ "func_ok": false,
+ "multi_ok": false
+}

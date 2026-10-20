@@ -1,0 +1,9 @@
+[math] '391' in 0.3s, reasoning 69 chars, 54 tok -> PASS
+[tool] [('get_weather', '{"city": "Piteå"}')] in 0.5s -> PASS
+[needle 34,732 tok @ 10%] '542476' in 5.1s -> PASS
+[needle 26,814 tok @ 50%] '858978' in 3.9s -> PASS
+[needle 30,966 tok @ 90%] '854697' in 4.3s -> PASS
+[needle 133,302 tok @ 10%] '441022' in 16.2s -> PASS
+[needle 133,960 tok @ 50%] '298538' in 16.7s -> PASS
+[needle 115,516 tok @ 90%] '962140' in 14.1s -> PASS
+FUNC ALL PASS

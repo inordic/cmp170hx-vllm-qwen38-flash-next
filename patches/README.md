@@ -1,6 +1,10 @@
 # Our vLLM patches
 
-These patches go on top of **vLLM `a5a30471` + iIIusi0n `qwen38-ple-ssd.patch` + 2dameneko `56e1347`**. Apply them in order; see [`../BUILD.md`](../BUILD.md).
+These patches go on top of **vLLM `a5a30471` + iIIusi0n `qwen38-ple-ssd.patch` + 2dameneko `56e1347`**. Apply them in numeric order; see [`../BUILD.md`](../BUILD.md).
+- **01–07** make the night-3 tree (`/opt/vllm-qfn-exp`), production from 2026-10-15 to 2026-10-20.
+- **08–18** were added in night 4 (2026-10-19/20). The tree with them (`/opt/vllm-qfn-n4`) is **production since 2026-10-20**. Number 14 is a gap: production also contains patch C3, which is not published here (see below).
+
+## 01–07: the night-3 tree
 
 | Patch | What it does | Origin |
 |---|---|---|
@@ -12,6 +16,46 @@ These patches go on top of **vLLM `a5a30471` + iIIusi0n `qwen38-ple-ssd.patch` +
 | `06-A1-thinking-off-consistency.py` | vLLM's qwen3 reasoning parser only reads `chat_template_kwargs.enable_thinking`. A1 works out on/off exactly the way Qwen Asgard does (effort none/off, inline `<\|think_*\|>` tags, string values), for the template and the parser together. Without it, the answer can land in `reasoning` with an empty `content`. Checked on 1176 combinations | ours (from [qwen-asgard-jinja](https://github.com/leonbollerup/qwen-asgard-jinja)) |
 | `07-A2-history-reasoning-fields.py` | reads history reasoning from a plain-string `thinking` field, and makes `/tokenize` accept `reasoning_content` | ours |
 
-**Manifests.** `manifest/` holds the sha256 of every touched file before patch 01 and after each of patches 01–04, plus every file that differs from `a5a30471` after patch 04. `make-venv.sh` builds the venv for the patched tree from the precompiled wheel.
+## 08–18: night 4, the n4 tree
 
-**Tested on this box.** Patches 01–04 pass the full gate: functional, multi-turn and a 20-minute soak with 896 requests and 0 errors. With n-gram lookup on, tool adherence is 98/100, against 96/100 without.
+Each patch is either **active** in production or does nothing until its switch is set. The `.py` patches take the tree root as their argument, assert every anchor exactly once, and skip a file they have already patched. The two `.patch` files apply with `git apply -p1`.
+
+| Patch | What it does | In production | Night-4 test status | Origin |
+|---|---|---|---|---|
+| `08-D1-mtp-int4-draft-head.py` | gives the MTP drafter its own W4A16 (int4, group 128) `lm_head`, read from the file named by `VLLM_MTP_DRAFT_HEAD_PATH` (made with [`../tools/models/quantize_lm_head.py`](../tools/models/)). The verify pass keeps the target's BF16 head, so only acceptance can change, never the accepted tokens | **active** (the profile sets `VLLM_MTP_DRAFT_HEAD_PATH`) | with MTP 3: code +6%, edit +4%; with MTP 4 + `--prefix-match-unit 16`: code +15%, edit +22% (clocks locked at 1440 MHz). Deployed after the gate: prod/func/multiturn checks and 29/29 features | port of AlexBrandes/vllm `14457f89e` (Apache-2.0) |
+| `09-D2-bounded-mixed-prefill.py` | while decodes run, caps a step's prefill tokens at `VLLM_MIXED_PREFILL_CHUNK` per waiting prompt (unset or 0 = off) | inactive | **rejected**: at 1600, 4 chat users + 1 agent got chat TTFT p95 5.57 s (0.45 s with it off) and 136 tok/s total (171); equal at 8 users | port of AlexBrandes/vllm `31208d203` (Apache-2.0) |
+| `10-K1-int8-kv-scale-cow.py` | copies the INT8 per-token-head KV scales along with the KV pages on copy-on-write block copies (prefix hits that end inside a block). This is the INT8 KV bug of nights 1–2. Test switches `VLLM_K1_DISABLE`, `VLLM_K1_DEBUG`, `VLLM_K1_LOG_EVERY`; optional vllm#55112 fix `VLLM_K1_FIX_55112=1` (off) | inactive: it only acts with `KV_DTYPE=int8_per_token_head`; production runs BF16 KV | the control without the copy reproduced the bug (10 of 28 cache-hit turns failed); with K1 every check passed (multiturn, 12-user fanout, first batch, pool churn), KV pool +71%, code decode −1.6%, long context unchanged. Eviction with a full pool is **not yet tested**. Details: [`notes/K1-int8-kv-scale-cow.md`](notes/K1-int8-kv-scale-cow.md) | ours |
+| `11-C1-reject-unproposed-drafts.py` | the scheduler pads a request with one token left to the 1+k spec shape with placeholder drafts; C1 turns the drafts of a step that starts inside the prefill into −1, which every rejection kernel rejects. `VLLM_SPEC_REJECT_UNPROPOSED=0` restores the stock gather | **active** (default on) | the offline kernel test (T3) passes its C1 unit check; the fresh-prompt probe (T2) shows a `!` first token in 0 of 24 trials | backport of [vllm#58784](https://github.com/vllm-project/vllm/pull/58784) (merged upstream) |
+| `12-C2-no-spec-pad-fresh-prompts.py` | does not pad a *fresh* one-token prompt to the spec shape on hybrid Mamba/GDN models, where the padded row would run the spec kernels from an uninitialised state slot. `VLLM_SPEC_PAD_NEW_REQS`: `auto` (default) / `1` stock / `0` never pad | **active** (default `auto`) | T2 24/24 with C2. The control with stock padding (`PRpad`) also passed 24/24, so the bug does not reproduce on this box; C2 is a precaution | re-derived from vektorprime's analysis (qwen38-flash-next-pp2, mtp-spec-decode "bug 3") |
+| `13-C5-mamba-split-blocksize-check.py` | logs a one-time warning when the scheduler's block size differs from the Mamba block size; `VLLM_MAMBA_SPLIT_USE_MAMBA_BS=1` ends prefill chunks on the Mamba block grid instead (xris99's fix) | inactive (check only, stock behaviour) | **the warning fires on every start** of the n4 tree, production included (`block_size=1616 != mamba_block_size=16`; 1600 with MTP 3, 3216 with INT8 KV). The patch header expected both to be 1600. The switch has not been tested; production keeps the stock split, which passes all the prefix-cache checks | xris99 qwen3.8-flash-next-cmp170hx `c407051` (Apache-2.0) |
+| 14 (C3), **not published** | for `draft_sample_method: probabilistic` only: masks the draft distribution with the request's top-k/top-p, optionally scaled by `tau`, before it is sampled and cached. `VLLM_SPEC_DRAFT_TOPKP=1`, `VLLM_SPEC_DRAFT_TAU` | inactive (default off) | T3 (offline): lossless. Not run on the server | adapted from vektorprime's mtp-spec-decode work (qwen38-flash-next-pp2); that repository has no licence, so the patch is not redistributed. The same idea is the open [vllm#56724](https://github.com/vllm-project/vllm/pull/56724) |
+| `15-C4-pp-align-skew-probe.py` | diagnostic only: on non-last PP ranks it checks whether a consumed request was scheduled again before its deferred align post-processing ran. `VLLM_PP_SKEW_PROBE=1` | inactive | in `PRpad` it reported 24 skewed rows once, during engine start (the warm-up rows), and the count did not grow under the T2 and T4 traffic. vektorprime's PP align-skew fix is therefore not ported | ours, after vektorprime's analysis |
+| `16-D3-qwen4exp-dflash2-tap.py` | the DFlash2 target-feature tap for Qwen3.8-Flash-Next: outputs of layers 5/15/25/35/45 averaged over the hyper-connection streams, relayed PP0 → PP1; the loader's PP weight filter is off for a draft model from another checkpoint. No extra op when no aux layers are set | inactive (only with `"method": "dflash"`) | DFlash2 ran with 3 and 4 drafts on Swift and with 3 on Intel: acceptance 3.02 / 3.31 / 2.97 (a wrong tap would give about 1), T1 pass, greedy identity 6 of 16 (the same range as every other drafter change) | ours |
+| `17-D3b-qwen4exp-allow-dflash.patch` | adds `dflash` to Qwen4Exp's allowed speculative methods | inactive (only with `"method": "dflash"`) | without it DFlash2 did not start | ours |
+| `18-D3c-mtp-buffer-guard.patch` | keeps the regular hidden states when the MTP target-hidden-state buffer does not exist (any drafter other than MTP) | inactive (a no-op with MTP) | without it the DFlash2 engine died at start; with it DF3/DF4 ran | ours |
+
+The test outputs and profiles are in [`../results/`](../results/): T1–T4 and the K1 checks in `checks/night4/`, the speed runs in `speed/`, the profiles in `profiles/night4/`, and every line of the night in `logs/night4-NIGHT-LOG.md`. The tools are in [`../bench/night4/`](../bench/night4/).
+
+**Apply order.** 08 → 18 as numbered, skipping 14: D1, D2, K1, C1, C2, C5, C4, D3, D3b, D3c. Some patches share files (`scheduler.py`: D2, C2, C5; `model_runner.py`: K1, C4, D3c), and their anchors expect this order. The chain does not depend on C3: replayed on the night-3 tree without it, every patch finds each of its anchors exactly once (D3b and D3c apply with `git apply`), and all 13 touched files compile.
+
+**What production has in addition: C3.** Production was built with C3 applied between 13 and 15. It is adapted from vektorprime's mtp-spec-decode work, and is not redistributed because that repository has no licence. It changes nothing unless `VLLM_SPEC_DRAFT_TOPKP=1` (or a `VLLM_SPEC_DRAFT_TAU` other than 1) is set, which production does not do; switched off, it only allocates two small per-request-slot buffers. The only difference to the published chain is that inactive code in `vllm/v1/worker/gpu/spec_decode/speculator.py` and a three-line hook in `vllm/v1/worker/gpu/model_runner.py` that hands the sampler's top-k/top-p state to it. A tree built from this repository therefore behaves like production. The offline test T3 skips its `c3` case when C3 is absent.
+
+## Manifests
+
+`manifest/` holds:
+- `backport-files-*.sha256`: the sha256 of every file touched by 01–04, before patch 01 and after each of patches 01–04;
+- `all-changed-vs-a5a30471-after-04.sha256`: every file that differs from `a5a30471` after patch 04;
+- `n4-files-before-08.sha256`: the 13 files that night 4 touched, as they are in the night-3 tree (after 07);
+- `n4-files-after-NN.sha256`: those files that differ from the night-3 tree after published patch NN (there is no 14). This is the published chain, which a reader can reproduce;
+- `n4-production-with-unpublished-C3.sha256`: the 13 files of the production tree `/opt/vllm-qfn-n4`, which also contains C3.
+
+`n4-files-after-18.sha256` and the production file differ only in `model_runner.py` (the C3 hook) and `speculator.py` (unchanged from the night-3 tree in the published chain). Every other file is byte-identical. We checked both by replay on the night-3 tree's files: with C3 the result is byte-identical to production, without it the result matches `n4-files-after-18.sha256`. The starting files match the existing 01–04 manifests.
+
+`make-venv.sh` builds the venv for a patched tree from the precompiled wheel. By default it builds `/opt/vllm-qfn-n4`.
+
+## Tested on this box
+
+- **01–04** pass the full gate: functional, multi-turn and a 20-minute soak with 896 requests and 0 errors. With n-gram lookup on, tool adherence is 98/100, against 96/100 without.
+- **The n4 tree (01–18 with C3)** passed the night-4 deploy gate on 2026-10-20: `prod_check`, `func_check`, multi-turn (79% of the queried tokens were prefix hits) and the 29 live features of night 3.
+  - The night-4 canaries also passed on it: the dead-drafter check (21 parallel streams kept drafting), the prefix-bleed soak (72/72 answers right) and the 131K-token preemption canary (0 preemptions).
+  - Same-night quality matches night 3 within the noise; see the [README](../README.md).

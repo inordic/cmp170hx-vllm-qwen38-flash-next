@@ -1,0 +1,10 @@
+{
+ "name": "DF4",
+ "perf_error": "[Errno 2] No such file or directory: '/root/tune/exact-n4-DF4.json'",
+ "code": 189.0,
+ "accept": 3.314070351758794,
+ "edit_off": 231.9,
+ "edit_low": 229.1,
+ "func_ok": false,
+ "multi_ok": false
+}

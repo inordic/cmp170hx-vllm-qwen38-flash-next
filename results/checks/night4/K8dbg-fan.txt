@@ -1,0 +1,16 @@
+[fanout] conv 0 turn 1 first: prompt 26,186 TTFT 3.476s hit 0 (offset 0) think 133 ch, finish stop, answer '470723' -> PASS
+[fanout] conv 0 turn 2 user0: prompt 26,219 TTFT 0.257s think 83 ch, finish stop, answer '470723' -> PASS
+[fanout] conv 0 turn 2 user1: prompt 26,220 TTFT 0.47s think 83 ch, finish stop, answer '531864' -> PASS
+[fanout] conv 0 turn 2 user3: prompt 26,220 TTFT 0.571s think 83 ch, finish stop, answer '511158' -> PASS
+[fanout] conv 0 turn 2 user2: prompt 26,221 TTFT 0.47s think 85 ch, finish stop, answer '718806' -> PASS
+[fanout] conv 0 turn 2 user6: prompt 26,220 TTFT 0.844s think 83 ch, finish stop, answer '531864' -> PASS
+[fanout] conv 0 turn 2 user8: prompt 26,220 TTFT 0.921s think 83 ch, finish stop, answer '511158' -> PASS
+[fanout] conv 0 turn 2 user4: prompt 26,220 TTFT 0.845s think 82 ch, finish stop, answer '768250' -> PASS
+[fanout] conv 0 turn 2 user5: prompt 26,219 TTFT 0.844s think 82 ch, finish stop, answer '470723' -> PASS
+[fanout] conv 0 turn 2 user9: prompt 26,220 TTFT 1.002s think 82 ch, finish stop, answer '768250' -> PASS
+[fanout] conv 0 turn 2 user11: prompt 26,221 TTFT 1.001s think 83 ch, finish stop, answer '531864' -> PASS
+[fanout] conv 0 turn 2 user10: prompt 26,220 TTFT 1.001s think 81 ch, finish stop, answer '470723' -> PASS
+[fanout] conv 0 turn 2 user7: prompt 26,221 TTFT 0.844s think 169 ch, finish stop, answer '718806' -> PASS
+prefix cache: 313,920 of 340,827 queried tokens were hits
+server log during the run: K1 registrations 0, K1 CoW step lines 20 (pairs 224), stale rows before copy 1768, KV partial-copy warnings 0, 'NOT copied' 0, errors 0
+K1 FANOUT ALL PASS

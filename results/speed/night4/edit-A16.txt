@@ -1,0 +1,2 @@
+| n4-A16 | code edit, thinking off | decode tok/s median 264.7 (min 263.1, max 267.1) |
+| n4-A16 | code edit, thinking low | decode tok/s median 254.5 (min 247.8, max 259.4) |
