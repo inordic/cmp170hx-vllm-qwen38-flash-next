@@ -78,6 +78,10 @@ Then build the venv with [`patches/make-venv.sh`](patches/make-venv.sh) (`make-v
    ```
    **Check:** the script prints the file's size and sha256. Ours is 330,265,872 bytes with sha256 `5c5461d7…`.
 
+**Option, not the standard: Swift-A16.** It is Swift 1.5 AWQ with its attention projections back in BF16. Build it with [`tools/models/`](tools/models/) (see [`swift-a16.md`](tools/models/swift-a16.md)); it needs about 72 GiB of new disk, and the draft head above serves it too.
+- **Night 5's results:** better long context (100% against 95.0%) and total BFCL (+1.6 points), but lower multi-turn tool use (57.0% against 61.3%) and 10% slower raw decode.
+- **In production:** it served for about a quarter of an hour on 2026-10-21, as part of a build that was rolled back ([night-5 report](research/2026-10-21-night5-max-build.md)).
+
 ## 5. Serve
 
 1. Put [`config/qfn-prod.env`](config/qfn-prod.env) next to 2dameneko's `serve/serve.sh`, and set the paths in it: venv, model, `PLE_SSD_LIB`, template, API key file, and the draft head in `VLLM_MTP_DRAFT_HEAD_PATH`.
@@ -102,6 +106,6 @@ Then measure. [`bench/perf_exact.py`](bench/perf_exact.py) gives exact-length pr
 | `MTP=0` plus `--speculative-config {"method":"mtp","num_speculative_tokens":4,"ngram_lookup":true}` and `VLLM_MTP_DRAFT_HEAD_PATH` (patch 08) | night 4: +15% code and +22% code-edit decode over MTP 3 with the BF16 head (clocks locked at 1440 MHz). The n-gram lookup alone gave +15% on code editing in night 2 |
 | `--prefix-match-unit 16 --enable-mamba-fine-grained-prefix-cache` | multi-turn follow-ups reuse the cache. With 4 draft tokens the attention block is 1616 tokens, which 32 does not divide, so MTP 4 needs 16 |
 | `MAX_NUM_SEQS=24` + the extended `CAPTURE_SIZES` | 16 users at 504 tok/s, single-user speed unchanged |
-| BF16 KV | INT8 KV was broken with prefix-cache follow-ups + MTP + a fine `--prefix-match-unit`. Patch 10 (K1) fixes it: +71% KV pool for −1.6% decode in night 4. Production stays on BF16 until night 5's full-pool test |
+| BF16 KV | INT8 KV was broken with prefix-cache follow-ups + MTP + a fine `--prefix-match-unit`. Patch 10 (K1) fixes it: +71% KV pool for −1.6% decode in night 4, and a pool flooded to 1.45× passed in night 5. Production stays on BF16 KV until INT8 KV has been tested alone for quality (BFCL three times, multi-turn included) |
 | `VLLM_PLE_NONPLE_LOADER=instanttensor` | faster engine start: 2dameneko measured 680 s → 150–166 s with their patch 06 |
 | `CUDA_DEVICES=1,0`, `VLLM_PP_LAYER_PARTITION=24,24` | 24/24 with BF16 KV was fastest on long prompts |

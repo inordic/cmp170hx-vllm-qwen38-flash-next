@@ -1,0 +1,27 @@
+model qwen3.8-flash-next; one-token prompt = [760] ('The'); background streams: 6
+  trial  1: ok   text=' **Bassaeus** hypothesis concerning' first=token_id:2972
+  trial  2: ok   text=' appendix “Licensing Agencies” lists the' first=token_id:84558
+  trial  3: ok   text=" Role of Interior Design in Nigeria's Bu" first=token_id:14955
+  trial  4: ok   text=' school’s hall‑pass policy states:' first=token_id:2812
+  trial  5: ok   text=' 1990 Australian television series' first=token_id:220
+  trial  6: ok   text=' Battle of Are, fought in January ' first=token_id:15641
+  trial  7: ok   text=' fragment of a 17th‑' first=token_id:11937
+  trial  8: ok   text=' moduli space of flat connections can be' first=token_id:1410
+  trial  9: ok   text=' influence of the β parameter on the eff' first=token_id:9870
+  trial 10: ok   text=' six-seater leisure coupe with a body' first=token_id:4590
+  trial 11: ok   text=' formulation of this concise calculation' first=token_id:53041
+  trial 12: ok   text=' team identified two major hazards on th' first=token_id:2015
+  trial 13: ok   text=' recovery of critical minerals from the ' first=token_id:12964
+  trial 14: ok   text=' text "terlebih lagi setelah ituปั่น' first=token_id:1414
+  trial 15: ok   text=' .NET Source Code and ODP.NET' first=token_id:641
+  trial 16: ok   text=' declaration of the Soviet Government, a' first=token_id:17466
+  trial 17: ok   text=' scale of the approximate analysis is sh' first=token_id:5281
+  trial 18: ok   text=' “npd” collection consists of ' first=token_id:1001
+  trial 19: ok   text=' author argues that evaluating whether s' first=token_id:3049
+  trial 20: ok   text=' following excerpt is taken from a 1' first=token_id:2614
+  trial 21: ok   text=' sum of the first $ n $ terms' first=token_id:2542
+  trial 22: ok   text=' study leverages atmospheric reanalysis ' first=token_id:3788
+  trial 23: ok   text=' décime tax (a 10' first=token_id:33630
+  trial 24: ok   text=' EU Charter, adopted at Nice, is' first=token_id:9520
+
+24/24 trials OK; first token '!' in 0/24 (a high rate with top_p=1/top_k=-1 points at accepted placeholder drafts, i.e. C1 missing)

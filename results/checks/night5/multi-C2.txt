@@ -1,0 +1,17 @@
+conv 0 turn 1: prompt 16,493 tok, TTFT  2.20s, total   2.5s, answer '702386' -> PASS
+conv 0 turn 2: prompt 16,523 tok, TTFT  0.17s, total   0.5s, answer '257609' -> PASS
+conv 0 turn 3: prompt 16,554 tok, TTFT  0.15s, total   0.4s, answer '664923' -> PASS
+conv 0 turn 4: prompt 16,584 tok, TTFT  0.16s, total   0.4s, answer '624772' -> PASS
+conv 0 turn 5: prompt 16,614 tok, TTFT  0.19s, total   0.4s, answer '655248' -> PASS
+conv 1 turn 1: prompt 19,884 tok, TTFT  2.63s, total   2.8s, answer '147379' -> PASS
+conv 1 turn 2: prompt 19,914 tok, TTFT  0.16s, total   0.5s, answer '226033' -> PASS
+conv 1 turn 3: prompt 19,945 tok, TTFT  0.16s, total   0.4s, answer '405730' -> PASS
+conv 1 turn 4: prompt 19,975 tok, TTFT  0.16s, total   0.4s, answer '507978' -> PASS
+conv 1 turn 5: prompt 20,005 tok, TTFT  0.16s, total   0.4s, answer '752271' -> PASS
+conv 2 turn 1: prompt 20,463 tok, TTFT  2.74s, total   2.9s, answer '622089' -> PASS
+conv 2 turn 2: prompt 20,493 tok, TTFT  0.18s, total   0.4s, answer '973627' -> PASS
+conv 2 turn 3: prompt 20,524 tok, TTFT  0.17s, total   0.4s, answer '542310' -> PASS
+conv 2 turn 4: prompt 20,554 tok, TTFT  0.18s, total   0.4s, answer '914364' -> PASS
+conv 2 turn 5: prompt 20,584 tok, TTFT  0.17s, total   0.3s, answer '102583' -> PASS
+prefix cache: 227,584 of 285,109 queried tokens were hits (80%)
+MULTITURN ALL PASS

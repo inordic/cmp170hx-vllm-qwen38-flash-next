@@ -1,0 +1,2 @@
+| n5-C2 | code edit, thinking off | decode tok/s median 264.0 (min 262.3, max 266.0) |
+| n5-C2 | code edit, thinking low | decode tok/s median 253.6 (min 250.5, max 255.8) |

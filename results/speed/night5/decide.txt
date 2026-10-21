@@ -1,0 +1,6 @@
+         BFCL  EvalP  LongC  lat s   code  verdict
+R        80.5   85.8   95.0   7.56  191.1  reference
+C1       82.2   86.0  100.0   7.77  172.3  PASS
+C2       81.6   85.8  100.0   7.83  168.4  PASS
+C3       80.8   85.6  100.0   5.46  178.6  PASS
+PICK C3

@@ -1,0 +1,24 @@
+[multiturn] conv 0: turn-1 prompt 25,730 tokens, 130 into a 3200-token block
+[multiturn] conv 0 turn 1 first: prompt 25,730 TTFT 3.304s hit 0 (offset 0) think 184 ch, finish stop, answer '526363' -> PASS
+[multiturn] conv 0 turn 2 hit: prompt 25,760 TTFT 0.205s hit 25,712 (offset 112 MID-BLOCK) think 150 ch, finish stop, answer '459847' -> PASS
+[multiturn] conv 0 turn 3 hit: prompt 25,790 TTFT 0.209s hit 25,712 (offset 112 MID-BLOCK) think 139 ch, finish stop, answer '254190' -> PASS
+[multiturn] conv 0 turn 4 hit: prompt 25,820 TTFT 0.183s hit 25,760 (offset 160 MID-BLOCK) think 183 ch, finish stop, answer '712323' -> PASS
+[multiturn] conv 1: turn-1 prompt 20,850 tokens, 1650 into a 3200-token block
+[multiturn] conv 1 turn 1 first: prompt 20,850 TTFT 2.76s hit 0 (offset 0) think 103 ch, finish stop, answer '568664' -> PASS
+[multiturn] conv 1 turn 2 hit: prompt 20,880 TTFT 0.189s hit 20,832 (offset 1632 MID-BLOCK) think 176 ch, finish stop, answer '464952' -> PASS
+[multiturn] conv 1 turn 3 hit: prompt 20,910 TTFT 0.191s hit 20,832 (offset 1632 MID-BLOCK) think 128 ch, finish stop, answer '331753' -> PASS
+[multiturn] conv 1 turn 4 hit: prompt 20,940 TTFT 0.161s hit 20,880 (offset 1680 MID-BLOCK) think 151 ch, finish stop, answer '627181' -> PASS
+[multiturn] conv 2: turn-1 prompt 22,370 tokens, 3170 into a 3200-token block
+[multiturn] conv 2 turn 1 first: prompt 22,370 TTFT 2.895s hit 0 (offset 0) think 103 ch, finish stop, answer '411996' -> PASS
+[multiturn] conv 2 turn 2 hit: prompt 22,400 TTFT 0.175s hit 22,352 (offset 3152 MID-BLOCK) think 148 ch, finish stop, answer '440970' -> PASS
+[multiturn] conv 2 turn 3 hit: prompt 22,430 TTFT 0.164s hit 22,352 (offset 3152 MID-BLOCK) think 123 ch, finish stop, answer '108475' -> PASS
+[multiturn] conv 2 turn 4 hit: prompt 22,460 TTFT 0.162s hit 22,400 (offset 0) think 102 ch, finish stop, answer '232492' -> PASS
+[multiturn] conv 3: turn-1 prompt 22,395 tokens, 3195 into a 3200-token block
+[multiturn] conv 3 turn 1 first: prompt 22,395 TTFT 2.886s hit 0 (offset 0) think 152 ch, finish stop, answer '274529' -> PASS
+[multiturn] conv 3 turn 2 hit: prompt 22,425 TTFT 0.162s hit 22,368 (offset 3168 MID-BLOCK) think 144 ch, finish stop, answer '328282' -> PASS
+[multiturn] conv 3 turn 3 hit: prompt 22,455 TTFT 0.165s hit 22,400 (offset 0) think 124 ch, finish stop, answer '975334' -> PASS
+[multiturn] conv 3 turn 4 hit: prompt 22,485 TTFT 0.176s hit 22,432 (offset 32 MID-BLOCK) think 133 ch, finish stop, answer '251412' -> PASS
+follow-up hits: 10 of 12 mid-block; offsets [0, 0, 32, 112, 112, 160, 1632, 1632, 1680, 3152, 3152, 3168]; median follow-up TTFT 0.176 s
+prefix cache: 274,032 of 366,100 queried tokens were hits
+server log during the run: K1 registrations 0, K1 CoW step lines 0 (pairs 0), stale rows before copy n/a (VLLM_K1_DEBUG off), KV partial-copy warnings 0, 'NOT copied' 0, errors 0
+K1 MULTITURN ALL PASS

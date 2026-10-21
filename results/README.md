@@ -1,8 +1,8 @@
 # Results
 
-Everything here was measured on the box described in the [main README](../README.md), from 13 to 20 October 2026.
+Everything here was measured on the box described in the [main README](../README.md), from 13 to 21 October 2026.
 
-**Clocks.** Nights 1–3 and the production checks after a deploy (`*-N3-prod`, `*-N4-prod`) ran at the cards' default clocks; under load they hold about 1455–1485 MHz. The night-4 A/B runs and the night-5 reference `R` ran with both cards **locked at 1440 MHz**, so that configs measured hours apart compare fairly. Compare locked numbers with locked numbers.
+**Clocks.** Nights 1–3 and the production checks after a deploy (`*-N3-prod`, `*-N4-prod`, `*-N5-prod`) ran at the cards' default clocks; under load they hold about 1455–1485 MHz. The night-4 and night-5 A/B runs ran with both cards **locked at 1440 MHz**, so that configs measured hours apart compare fairly. Compare locked numbers with locked numbers.
 
 ## Layout
 
@@ -18,9 +18,12 @@ Everything here was measured on the box described in the [main README](../README
 | `tool-adherence/` | 100 tool-call cases, with and without n-gram lookup |
 | `hardware/` | GPU self-test logs per card, and clocks/temperatures during a run |
 | `profiles/night1/`, `profiles/night2/`, `profiles/night4/`, `profiles/night5/` | the exact serve profile behind every config name. The night-4/5 profiles were made by [`mkprof.py`](../bench/night4/mkprof.py); its arguments are in each file's first line |
-| `checks/night4/`, `checks/night5/` | the correctness checks: T1 dead drafter, T2 fresh-prompt probe, T3 kernel exactness, T4 prefix-bleed soak, the K1 INT8-KV checks (`K8*.txt` / `.json`), greedy identity (`greedy-*.json`), the output-distribution samples (`dist-*.json.gz`; gunzip them into `/root/tune/night4` before `dist_test.py compare`), the deploy's feature check, and `func-*` / `multi-*` per config |
+| `checks/night4/`, `checks/night5/` | the correctness checks: T1 dead drafter, T2 fresh-prompt probe, T3 kernel exactness, T4 prefix-bleed soak, the K1 INT8-KV checks (`K8*` in night 4, `C1-*` in night 5, `.txt` / `.json`), greedy identity (`greedy-*.json`), the output-distribution samples (`dist-*.json.gz`; gunzip them into `/root/tune/night4` before `dist_test.py compare`), the deploy's feature check, and `func-*` / `multi-*` per config |
+| `checks/night5/prod-start-2026-10-21.txt` | five lines of the production service log from the C1T start: KV dtype, model loading per stage, the KV pool (1,239,671 tokens) and the server start. The deploy line in the night-5 log says 838,024 tokens. That number is wrong: `deploy5.sh` took the first KV-pool line of the log file, which came from the previous start |
+| `quality/compare-night5.md`, `.json` | night 5: R, C1, C2 and C3 paired per item, made with `run_eval.py compare` from the full results |
 | `logs/night{1,2,3,4}-NIGHT-LOG.md` | the overnight logs, step by step, with timestamps |
-| `logs/night5-NIGHT-LOG.md` | **a snapshot** of the night-5 log taken at 21:15 UTC on 2026-10-20, while the night was still running. It covers the reference `R` only |
+| `logs/night5-NIGHT-LOG.md` | the night-5 log, including the C1T deploy on 2026-10-21 (18:56–19:04 UTC) and its rollback (19:15:59–19:22:10 UTC) |
+| `checks/night5/rollback-2026-10-21.txt` | the `[rollback]` lines of the night-5 log: back to the night-4 standard, gate checks, code decode |
 
 ## Config names
 
@@ -58,7 +61,17 @@ Everything here was measured on the box described in the [main README](../README
 | `DF3`, `DF4`, `DFI` | DFlash2 drafter with 3 / 4 drafts on Swift, 3 on Intel | report only |
 | `N4-prod` | production on port 8080 after the deploy, **default clocks** | code decode 201.6 tok/s |
 
-**Night 5:** `R` (prefix `n5-`) is the production profile on port 8008 with clocks locked at 1440 MHz; `Rmatrix` is its full prefill matrix from 1K to 128K, and `n5-R-*` its concurrency runs.
+**Night 5** (prefix `n5-`; port 8008, clocks locked at 1440 MHz, the production n4 tree):
+
+| Name | What changed | Notes |
+|---|---|---|
+| `R` | the night-4 standard (`D4p16`) | the reference. `Rmatrix` is its full prefill matrix from 1K to 128K; `n5-R-*` its concurrency runs |
+| `C1` | `R` + Swift-A16 + INT8 KV (`int8_per_token_head`, patch K1) | ran the K1 checks first (`C1-*`), including a pool flooded to 1.45× (`C1-pinned`) |
+| `C2` | `C1` + `draft_sample_method: probabilistic` | no gain; not used |
+| `C3` | `C2` + `terse: true` as the template default | `decide.py`'s pick; `n5-C3-*` are its concurrency runs |
+| `C1T` | `C1` + terse, i.e. `C3` without probabilistic drafting | served production on 2026-10-21 from 19:00 to 19:16 UTC, then rolled back to the night-4 standard because of the multi-turn drop and the 13% decode cost; not run in the A/B itself |
+| `N5-prod` | production (C1T) on port 8080 after the deploy, **default clocks** | code decode 174.6 tok/s |
+| `N5-rollback` | production after the rollback to the night-4 standard, **default clocks** | code decode 194.7 tok/s |
 
 ## Quality tags
 
@@ -76,6 +89,7 @@ Everything here was measured on the box described in the [main README](../README
 | `n4-PRn` | night 4: probabilistic drafting, BFCL once (1,040 items) |
 | `n4-terse` | night 4: `chat_template_kwargs: {"terse": true}`, BFCL once and EvalPlus |
 | `n4-K8` | night 4: INT8 KV with patch K1, long context only |
+| `n5-R`, `n5-C1`, `n5-C2`, `n5-C3` | night 5: the night-4 standard and the three candidates, full suite at T=1 with BFCL three times (3,120 items); the same items and seeds for all four. Comparison: `compare-night5.md` |
 
 The night-4 tags also have the suite's `suite.log` (self-tests, probe and progress lines; no benchmark texts).
 

@@ -6,6 +6,8 @@ How the Swift-A16 checkpoint was built, written before night 4 with the scripts 
 - quality: BFCL 82.1% ([summary](../../results/quality/n4-A16/medium/bfcl.summary.json)) against 79.6%, long context 99.4% ([summary](../../results/quality/n4-A16/medium/longctx.summary.json)) against 98.3%, EvalPlus 85.8% against 86.0%;
 - speed, clocks locked at 1440 MHz: code decode 173.7 tok/s ([`decode-n4-A16.json`](../../results/speed/decode-n4-A16.json)) against 193.6 (−10%); KV pool 723,684 tokens against 838,024.
 
+**Night 5 and production.** In night 5, A16 + INT8 KV (C1) scored long context 100% against 95.0% and total BFCL +1.6 points, but its multi-turn subset was 57.0% against 61.3%. On 2026-10-21 it served production for about a quarter of an hour, as part of C1T (with INT8 KV and terse), and was rolled back. It stays an option. See the [night-5 report](../../research/2026-10-21-night5-max-build.md).
+
 Swift-A16 is the Swift 1.5 W4A16 AWQ checkpoint (`/opt/vllm-qfn/models/swift15-awq`) with one change. Its INT4 attention projections are replaced by the BF16 originals from Swift's own BF16 release. The routed experts stay INT4 (AWQ). Every other tensor is unchanged, byte for byte. Intel/Qwen3.8-Flash-Next-W4A16-AutoRound uses the same design, and its attention group comes to the same 5.04 GiB.
 
 | | |

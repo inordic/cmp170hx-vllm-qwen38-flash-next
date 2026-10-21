@@ -1,0 +1,79 @@
+[PASS] effort aliases accepted (11 values): {'low': 34, 'minimal': 34, 'medium': 1565, 'high': 411, 'xhigh': 338, 'max': 352, 'ultracode': 359, 'extreme': 338, 'bogus': 902, 'none': 0, 'off': 0}
+[PASS] effort none/off via kwargs => no thinking, answer in content: {'none': {'reasoning': 0, 'content': 'No, 391 is not prime because it is divis'}, 'off': {'reasoning': 0, 'content': 'No, 391 is not prime because it is divis'}}
+[PASS] top-level reasoning_effort none => answer in content: HTTP 200 reasoning 0 content 'No, 391 is not prime because it is divis'
+[PASS] top-level reasoning_effort field (OpenAI style) accepted: HTTP 200, reasoning 315 chars
+[PASS] enable_thinking=false => no thinking: reasoning 0 chars, answer 'No, 391 is not prime because it is divis'
+[PASS] inline tag <|think_off|> => no thinking, answer in content, tag stripped: reasoning 0, content 'No', tag in prompt: False
+[PASS] inline tag <|think_on|> + enable_thinking=false => thinking, reasoning separated from the answer: HTTP 200 reasoning 879, content '\n\nNo.'
+[PASS] inline tag <|think_on|> + reasoning_effort none => thinking, reasoning separated from the answer: HTTP 200 reasoning 1217, content '\n\nNo. (391 = 17 × 23)'
+[PASS] enable_thinking="false" (string) => no thinking, answer in content: HTTP 200 reasoning 0 content 'No, 391 is not prime because it is divis'
+[PASS] control tokens in user text stay text (no injected turns): real <|im_start|> tokens: 3 (clean request: 3)
+[PASS] single tool call: [('read_file', '{"path": "src/app.py"}')]
+[PASS] parallel tool calls (2 cities): [('get_weather', '{"city": "Oslo"}'), ('get_weather', '{"city": "Lima"}')]
+[PASS] irrelevance: no tool call for 2+2: 
+
+4
+[PASS] round trip with STRINGIFIED arguments in history: 
+
+It prints:
+
+```
+hello asgard
+```
+
+The file contains a single line: `print('hel
+[PASS] failure_notes off by default / on when asked: {'off': False, 'on': True}
+[PASS] max_tool_response_chars keeps head+tail: {'full_chars': 35508, 'truncated_chars': 6509, 'answer_mentions_disk': True}
+[PASS] history reasoning via reasoning -> one <think> block: 
+<think>
+R-MARK
+</think>
+
+Yes.<|im_end|>
+<|im_start|>user
+q2
+[PASS] history reasoning via reasoning_content -> one <think> block: 
+<think>
+R-MARK
+</think>
+
+Yes.<|im_end|>
+<|im_start|>user
+q2
+[PASS] history reasoning via thinking (string) -> one <think> block: 
+<think>
+R-MARK
+</think>
+
+Yes.<|im_end|>
+<|im_start|>user
+q2
+[PASS] history reasoning via inline <think> -> one <think> block: 
+<think>
+R-MARK
+</think>
+
+Yes.<|im_end|>
+<|im_start|>user
+q2
+[PASS] preserve_thinking=false drops earlier reasoning: dropped
+[PASS] developer role: HTTP 200 
+
+Oslo
+[PASS] two system messages: HTTP 200 
+
+Oslo
+[PASS] content parts (list): HTTP 200 
+
+Oslo.
+[PASS] system message mid-conversation: HTTP 200 
+
+Oslo
+[PASS] anthropic: tool_use: HTTP 200 [('get_weather', {'city': 'Bergen'})]
+[PASS] anthropic: tool_result round trip (thinking block in history): 
+
+Bergen: rain, 9 °C.
+[PASS] anthropic: tool_reference in tool_result (tool search) -> next call: HTTP 200 [('get_weather', {'city': 'Bergen'})]
+[PASS] multi-turn prefix reuse (reasoning sent back): {'turn1_s': 4.32, 'turn2_s': 0.82}
+
+FEATURES: 29/29 pass

@@ -47,3 +47,15 @@ The night-4 tests and the overnight A/B (2026-10-19/20) that chose the current p
 | `df_hook.sh` | the late DFlash2 block, added during the night after patches D3b/D3c |
 
 `speed.sh` calls `decode_code.py` and `edit_decode.py` (code decode and code-edit decode), and `deploy4.sh` calls night 3's `feature_check.py`. These three are not in this repository yet.
+
+## Night 5 (`night5/`)
+
+The night-5 A/B (2026-10-20/21): the night-4 standard `R` against three candidates that each add one piece, C1 (Swift-A16 + INT8 KV), C2 (+ probabilistic drafting) and C3 (+ terse). Same conventions as `night4/`; the T1/T2/T4, K1, speed and canary tools are the night-4 ones, and its `speed.sh` is [`night4/speed.sh`](night4/speed.sh) with night-5 paths and the `n5-` prefix. Results: [`../results/logs/night5-NIGHT-LOG.md`](../results/logs/night5-NIGHT-LOG.md), [`../results/checks/night5/`](../results/checks/night5/), [`../results/quality/compare-night5.md`](../results/quality/compare-night5.md).
+
+| Script | What it does |
+|---|---|
+| `run.sh` | the night: clocks locked at 1440 MHz; `R` with the full prefill matrix (1K–128K) and 8/16-user and mixed concurrency; C1 with the K1 checks first (first batch, multi-turn, 16-user fanout, a pool filled to 1.45×, multi-turn again); C2 with T1/T2; C3 with T4 and concurrency; the full quality suite at T=1 for all four (BFCL × 3, EvalPlus, long context); then `decide.py`. With `DEPLOY=0` (the default since 2026-10-20) it only reports |
+| `decide.py REF CAND...` | picks the most complete candidate that passes every gate against `REF` on the same night: BFCL ≥ REF − 1.5 points, EvalPlus and long context ≥ REF − 2, mean task latency (the median latencies of BFCL and EvalPlus, averaged) ≤ 1.1 × REF, func + multi-turn pass, and for INT8 KV the K1 checks |
+| `deploy5.sh NAME` | puts a candidate into production with the gate (prod/func/multi-turn, else rollback), then the feature check and a speed check. Its "8080 healthy" line greps the first KV-pool line of the service log, which can be from an earlier start (see [`../results/README.md`](../results/README.md)) |
+| `mkprof.py` | night 4's [`mkprof.py`](night4/mkprof.py) plus `tplkw=KEY:VALUE`, which sets a key in `--default-chat-template-kwargs` (used for `terse`) |
+| `rollback-c1t.sh` | 2026-10-21: put the night-4 standard back into production after C1T, then the gate checks and a code-decode run (the `[rollback]` lines of the night-5 log) |

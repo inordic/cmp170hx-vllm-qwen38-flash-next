@@ -9,6 +9,8 @@ This build serves Swift 1.5 (Qwen3.8-Flash-Next, W4A16 AWQ) on two NVIDIA CMP 17
 - **The context window is 262,144 tokens.**
 - **The quality suite** scores BFCL v4 at 80.3%, HumanEval+ 95.7%, MBPP+ 82.5% and LiveCodeBench v6 58.3% (nights 2 and 3, [`results/quality/`](results/quality/)). Re-run on the new standard, BFCL, EvalPlus and long context stay within the noise of those numbers (nights 4 and 5, see [Quality](#quality)).
 
+Night 5 tested a quality build on top: Swift-A16 (BF16 attention), INT8 KV and terse answers. It was better on long context, about equal on total tool calls, worse on multi-turn tool use, and 13% slower to decode. It served production for about a quarter of an hour on 2026-10-21 and was rolled back; see [Night 5](#night-5-a-quality-build-tested-and-rolled-back).
+
 Every number in this README comes from a file in [`results/`](results/), measured on the box described below. Night 4 and 5 A/B runs had both cards **locked at 1440 MHz**, so that configs measured hours apart compare fairly; production checks and nights 1–3 ran at default clocks, where the cards hold about 1455–1485 MHz under load. Each number says which applies.
 
 Three things set this build apart:
@@ -22,7 +24,7 @@ The build stands on [2dameneko's vLLM build](https://github.com/2dameneko/vllm-Q
 - **the hardware route:** VBIOS, power and LXC passthrough;
 - **the quality harness;**
 - **the measurements** behind every decision, and the tools that made them;
-- **the model build tools** for the draft head and the quality builds tested in night 4;
+- **the model build tools** for the draft head and the quality builds tested in nights 4 and 5;
 - **the [Qwen Asgard](https://github.com/leonbollerup/qwen-asgard-jinja) chat template**, together with two vLLM patches that keep thinking on/off consistent.
 
 ## Speed
@@ -88,7 +90,7 @@ These are the full numbers of the previous standard. BFCL, EvalPlus and long con
 | EvalPlus (HumanEval+ / MBPP+) | 86.5% (95.7 / 82.5) | 86.0% (93.9 / 82.5) | 85.8% |
 | Long context | 97.2% | 98.3% | 95.0% |
 
-Night 4: [`results/quality/n4-ref/`](results/quality/n4-ref/medium/). Night 5: so far only the summary line in the [night-5 log](results/logs/night5-NIGHT-LOG.md); its per-item files are not published yet. BFCL's 95% interval is about ±1.7 points. Long context ranges from 95.0% to 98.3% across the three runs: 9 against 3 misses out of 180, which is not significant at that size (Fisher's exact test, p = 0.14).
+Night 4: [`results/quality/n4-ref/`](results/quality/n4-ref/medium/). Night 5: [`results/quality/n5-R/`](results/quality/n5-R/medium/), BFCL three times. BFCL's 95% interval is about ±1.7 points. Long context ranges from 95.0% to 98.3% across the three runs: 9 against 3 misses out of 180, which is not significant at that size (Fisher's exact test, p = 0.14).
 
 **What the A/B tests showed** (paired per item, bootstrap CIs; details in [`research/`](research/)):
 
@@ -98,9 +100,51 @@ Night 4: [`results/quality/n4-ref/`](results/quality/n4-ref/medium/). Night 5: s
 | Reasoning effort? | **medium.** xhigh costs **−5.2 BFCL points** (CI −7.8 … −2.8) because it makes wrong parallel-call counts, and coding scores stay equal at +46% tokens. |
 | Chat template? | [Qwen Asgard](https://github.com/leonbollerup/qwen-asgard-jinja): **+1.4 BFCL points** over the model's own template (replicated), with nine robustness fixes, among them Claude Code tool search and control-token injection. |
 | Temperature 0.6 or 1.0? | No measurable difference. |
-| INT8 KV cache? | **Fixed in night 4** by patch 10 (K1). The INT8 scales were not copied when a prefix hit ended inside a block, which broke follow-ups together with prefix caching, MTP and a fine `--prefix-match-unit`. With K1 every check passes and the KV pool grows by 71%. Production still runs BF16 KV until night 5's test. |
+| Attention in BF16 or INT4? | **INT4 (Swift 1.5 AWQ) for now.** BF16 attention (Swift-A16) gains on total tool calls (+2.6 BFCL points in night 4, +1.6 in night 5) and on long context (+5.0 in night 5), and costs 10% of raw decode. In night 5 its multi-turn tool use was lower (57.0% against 61.3%; not significant on its own). The build tools are in [`tools/models/`](tools/models/). |
+| Terse answers? | **Off.** Tasks finish 28% sooner, but BFCL is 1.4 points below A16 + INT8 KV without terse or probabilistic drafting (p = 0.018; terse on its own is −0.8, within the noise), and multi-turn tool use falls further (night 5). |
+| Probabilistic drafting? | **Not used.** No bias, and no gain in task latency or quality (nights 4 and 5). |
+| INT8 KV cache? | **Correct with patch 10 (K1), not in production yet.** The INT8 scales were not copied when a prefix hit ended inside a block, which broke follow-ups together with prefix caching, MTP and a fine `--prefix-match-unit`. With K1 every check passes (night 4), including a pool flooded to 1.45× (night 5), and the KV pool grows by 71% on the standard model. It is next to be tested alone, on the standard, for quality. |
 
-## Night 4: what changed and what we found
+## Night 5: a quality build, tested and rolled back
+
+Night 5 (2026-10-20/21) put three candidates against the standard (`R`), each adding one piece to the one before:
+- C1 = Swift-A16 + INT8 KV;
+- C2 = C1 + probabilistic drafting;
+- C3 = C2 + terse as the template default.
+
+C1–C3 are build names, not patches. The night ran test-only with clocks locked at 1440 MHz.
+- **Suite:** the full quality suite at T=1 for all four builds, with BFCL three times (3,120 items) and the same items and seeds everywhere, so the comparison is paired per item ([`compare-night5.md`](results/quality/compare-night5.md)).
+- **Report and log:** [`research/2026-10-21-night5-max-build.md`](research/2026-10-21-night5-max-build.md), [`results/logs/night5-NIGHT-LOG.md`](results/logs/night5-NIGHT-LOG.md).
+
+| | Standard (R) | + A16 + INT8 KV (C1) | + probabilistic drafting (C2) | + terse (C3) |
+|---|---:|---:|---:|---:|
+| BFCL v4 (3,120) | 80.5% | **82.2%** | 81.6% | 80.8% |
+| of which multi-turn (300) | **61.3%** | 57.0% | 54.7% | 51.7% |
+| EvalPlus | 85.8% | 86.0% | 85.8% | 85.6% |
+| Long context (180) | 95.0% | **100%** | 100% | 100% |
+| Mean task latency, T=1 | 7.56 s | 7.77 s | 7.83 s | **5.46 s** |
+| Code decode, tok/s | **191.1** | 172.3 | 168.4 | 178.6 |
+| KV pool, tokens | 838,024 | **1,239,671** | 1,234,771 | 1,234,771 |
+
+- **Sources:** quality and tokens from [`compare-night5.md`](results/quality/compare-night5.md); task latency (the mean of the BFCL and EvalPlus median latencies) from [`decide.txt`](results/speed/night5/decide.txt); decode from `decode-n5-*.json` ([`results/speed/`](results/speed/)); KV pools from the night log.
+
+**Findings:**
+- **C1 (A16 + INT8 KV) is the best build on total BFCL** (+1.6 points, p = 0.023) and on long context (+5.0, p = 0.004). Its multi-turn subset, though, is 57.0% against 61.3% (−4.3, CI −10.0 … +1.0; not significant on its own), and raw decode is 10% slower.
+- **Terse cuts task latency by 28%** (BFCL answers 346 against 418 tokens, EvalPlus 491 against 936). It costs 1.4 BFCL points against C1 (CI −2.5 … −0.3, p = 0.018), and takes the multi-turn subset further down.
+- **Probabilistic drafting brings no gain**, in task latency or in quality.
+- **Multi-turn tool use falls 9.7 points from R to C3.**
+  - Paired CI −15.0 … −4.3; 25 tasks worse, 6 better (sign test p = 0.0009, still p = 0.04 after a Bonferroni correction over 44 subset comparisons).
+  - It is a post-hoc subset finding, and no single step is significant on its own.
+- **INT8 KV with K1 is correct.** Every K1 check passed again on C1 ([`results/checks/night5/`](results/checks/night5/), `C1-*`), including the full-pool test: 25 unique 72K-token prompts flooded the 1.24M-token pool 1.45 times over. Only 78,624 of 2,070,006 queried tokens were cache hits, so prefixes were evicted, and every answer stayed correct ([`C1-pinned.txt`](results/checks/night5/C1-pinned.txt)).
+- **C1T was live for about a quarter of an hour and was rolled back.** C1T is C3 without probabilistic drafting.
+  - It went into production on 2026-10-21 and served from 19:00 UTC. The deploy gate passed and so did 29/29 live features ([`feature-prod.txt`](results/checks/night5/feature-prod.txt)).
+  - Code decode was 174.6 tok/s at default clocks, against 201.6 for the standard ([`decode-N5-prod.json`](results/speed/decode-N5-prod.json)).
+  - At 19:16 UTC it was rolled back to the standard, because of the multi-turn drop and the 13% decode cost.
+  - The standard was serving again at 19:20 UTC: production, functional and multi-turn checks passed, and code decode was 194.7 tok/s at default clocks ([`rollback-2026-10-21.txt`](results/checks/night5/rollback-2026-10-21.txt), [`decode-N5-rollback.json`](results/speed/decode-N5-rollback.json)).
+
+**Next:** test INT8 KV alone on the standard (Swift 1.5 AWQ, the same drafting) with BFCL three times, multi-turn subset included, before using it. Its +71% KV pool is the reason to want it.
+
+## Night 4: drafting, quality builds, INT8 KV
 
 Night 4 (2026-10-19/20) tested drafting, quality builds and the INT8 KV fix. The A/B ran with clocks locked at 1440 MHz; the report is [`research/2026-10-20-night4-drafters-and-quality-builds.md`](research/2026-10-20-night4-drafters-and-quality-builds.md) and the log [`results/logs/night4-NIGHT-LOG.md`](results/logs/night4-NIGHT-LOG.md).
 
@@ -109,9 +153,9 @@ Night 4 (2026-10-19/20) tested drafting, quality builds and the INT8 KV fix. The
   - In production, at default clocks: 201.6 against 169 tok/s (+19%).
   - The drafter's own W4A16 `lm_head` ([patch 08](patches/)) makes each draft step cheaper, and that is what made a fourth draft token pay. MTP 4 needs `--prefix-match-unit 16`, because with 4 drafts the attention block is 1616 tokens; MTP 5 does not start.
   - The deploy passed the gate (production, functional and multi-turn checks, 29/29 live features) and a quality guard against night 3.
-- **Swift-A16 (BF16 attention) is the quality option.** BFCL 82.1% against 79.6% (+2.6 points) and long context 99.4% against 98.3% (+1.1), with EvalPlus 85.8% against 86.0% ([`n4-A16`](results/quality/n4-A16/medium/)). It costs 10% of code decode (173.7 tok/s, [`decode-n4-A16.json`](results/speed/decode-n4-A16.json)) and 14% of the KV pool, and is still faster than Intel AutoRound (160.8 tok/s, [`decode-n4-I_best.json`](results/speed/decode-n4-I_best.json)). Build tools: [`tools/models/`](tools/models/).
+- **Swift-A16 (BF16 attention) is the quality option** (night 5 tested it further, see above). BFCL 82.1% against 79.6% (+2.6 points) and long context 99.4% against 98.3% (+1.1), with EvalPlus 85.8% against 86.0% ([`n4-A16`](results/quality/n4-A16/medium/)). It costs 10% of code decode (173.7 tok/s, [`decode-n4-A16.json`](results/speed/decode-n4-A16.json)) and 14% of the KV pool, and is still faster than Intel AutoRound (160.8 tok/s, [`decode-n4-I_best.json`](results/speed/decode-n4-I_best.json)). Build tools: [`tools/models/`](tools/models/).
 - **Q6-class INT8 experts gain nothing over A16.** Swift-Q6x (A16 plus INT8 experts in 16 layers) scored BFCL 81.5% (1,264 items, time budget), EvalPlus 86.3% and long context 100% ([`n4-Q6X`](results/quality/n4-Q6X/medium/)), at 4% less decode and 39% less KV pool than A16. The quality gain comes from attention precision, not expert precision.
-- **INT8 KV is fixed by patch K1.** The control without the scale copy failed 10 of 28 cache-hit turns; with K1 every check passed ([`results/checks/night4/`](results/checks/night4/), `K8*`). KV pool 1,433,217 tokens against 838,024 (+71%) for 1.6% less code decode ([`decode-n4-K8.json`](results/speed/decode-n4-K8.json)), long context unchanged at 98.3% ([`n4-K8`](results/quality/n4-K8/medium/)). The churn test only reached 17% KV usage; night 5 tests a full pool.
+- **INT8 KV is fixed by patch K1.** The control without the scale copy failed 10 of 28 cache-hit turns; with K1 every check passed ([`results/checks/night4/`](results/checks/night4/), `K8*`). KV pool 1,433,217 tokens against 838,024 (+71%) for 1.6% less code decode ([`decode-n4-K8.json`](results/speed/decode-n4-K8.json)), long context unchanged at 98.3% ([`n4-K8`](results/quality/n4-K8/medium/)). The churn test only reached 17% KV usage; night 5 tested a full pool, which passed.
 - **DFlash2 runs on our stack, but loses to MTP 4 + n-gram lookup.** With patches 16–18 the DFlash2 drafter reaches acceptance 3.02 with 3 drafts and 3.31 with 4. Against the deployed setup, 4 drafts are 2% slower on code and 24% slower on code edits ([`decode-n4-DF4.json`](results/speed/decode-n4-DF4.json), [`edit-DF4.txt`](results/speed/night4/edit-DF4.txt)), because vLLM allows n-gram lookup only with MTP.
 - **Probabilistic drafting shows no bias, and its speed gain is not settled.**
   - The output-distribution test against no drafting gave TV 0.057 (letters) and 0.041 (digits), the same as greedy drafting (0.054 / 0.039) and inside the noise floor ([`dist-*.json.gz`](results/checks/night4/), night-4 log). BFCL 81.3% on 1,040 items ([`n4-PRn`](results/quality/n4-PRn/medium/)).
@@ -119,13 +163,6 @@ Night 4 (2026-10-19/20) tested drafting, quality builds and the INT8 KV fix. The
 - **Terse answers keep the score at fewer tokens.** With `terse: true`, BFCL 81.5% and EvalPlus 85.8% ([`n4-terse`](results/quality/n4-terse/medium/)) on 16% fewer tokens for BFCL (354 against 421) and 43% fewer for EvalPlus (536 against 933). EvalPlus's median latency halves (5.0 s against 9.9 s).
 - **Not adopted:** batch 3296 or 4896 tokens and the PP split 26/22 (no prefill gain; 26/22 gives +20% KV pool at −3% speed); the bounded prefill of patch 09 (chat p95 5.6 s against 0.45 s under mixed load); INT4 MTP experts (+26% KV pool for −1.1% decode).
 - **Correctness checks** on the new tree: no dead drafter in 21 parallel streams, 24/24 fresh-prompt probes, unbiased drafting kernels, 72/72 prefix-bleed answers, no preemption on a 131K prompt ([`results/checks/night4/`](results/checks/night4/), [`patches/README.md`](patches/README.md)).
-
-**Next: night 5** (2026-10-20/21, running). It compares the current standard (`R`, whose performance matrix is above) with three candidates that each add one piece (C1–C3 are night-5 candidate names, not patches):
-- C1 = Swift-A16 + INT8 KV, after the K1 checks, this time including a full pool;
-- C2 = C1 + probabilistic drafting;
-- C3 = C2 + terse as the template default.
-
-Every build gets the full quality suite at T=1 the same night. The speed tools still sample at temperature 0.6, so a decode-speed comparison at T=1 stays open.
 
 ## What runs
 
@@ -154,7 +191,7 @@ The full profile is in [`config/qfn-prod.env`](config/qfn-prod.env), and the bui
 | [`patches/`](patches/) | our vLLM patches 01–18 (without 14) on top of the 2dameneko build, with manifests, notes and the venv script |
 | [`tools/models/`](tools/models/) | the int4 draft head, the INT4 MTP experts, Swift-A16 and Swift-Q6x builds, and a weight-budget tool |
 | [`vbios/`](vbios/) | how both cards were cross-flashed to the 300 W VBIOS, and the wrapper scripts |
-| [`bench/`](bench/) | speed and functional tests, soak tests, GPU self-test, the overnight template A/B, the night-4 correctness checks and A/B |
+| [`bench/`](bench/) | speed and functional tests, soak tests, GPU self-test, the overnight template A/B, the night-4 correctness checks and A/B, the night-5 A/B and decision |
 | [`qeval/`](qeval/) | the quality harness: BFCL v4, EvalPlus, LiveCodeBench, long context; sandboxed and resumable |
 | [`results/`](results/) | every measurement: speed, concurrency, quality (per item), checks, tool adherence, hardware, profiles, night logs |
 | [`research/`](research/) | the night reports, the model and alternatives research, the Strata history |
@@ -169,6 +206,7 @@ Each of these is backed by a measurement in [`research/`](research/) and [`resul
 - **The n-gram lookup before MTP** gives +15% on code editing (251 vs 219 tok/s) at no quality cost (tool adherence 98/100).
 - **More speculative tokens pay only with a cheap draft step.** Before, MTP 4 needed `--prefix-match-unit 16` and was no faster than MTP 2. In night 4, with the drafter's `lm_head` in int4, MTP 4 gave +15% on code and +22% on code edits over MTP 3.
 - **On this checkpoint, quality sits in attention precision.** BF16 attention (Swift-A16) gained 2.6 BFCL points; INT8 experts on top added nothing.
+- **Read the subsets, not just the total.** Night 5's best build on total BFCL (A16 + INT8 KV, +1.6 points) was worse on multi-turn tool use, the part closest to agentic coding. The quality build went live and came back out within the hour.
 - **Lock the clocks for overnight A/B runs.** Configs measured hours apart only compare fairly at a fixed clock; we lock both cards at 1440 MHz, close to what they hold under load.
 - **vLLM beat Strata** (the GGUF engine we started with) on prefill and time to first token: 128K in 15.7 s instead of 23.7 s. Strata's patches and report are in [`research/strata/`](research/strata/).
 

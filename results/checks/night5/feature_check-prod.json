@@ -1,0 +1,192 @@
+[
+ {
+  "scenario": "effort aliases accepted (11 values)",
+  "ok": true,
+  "detail": {
+   "low": 34,
+   "minimal": 34,
+   "medium": 1565,
+   "high": 411,
+   "xhigh": 338,
+   "max": 352,
+   "ultracode": 359,
+   "extreme": 338,
+   "bogus": 902,
+   "none": 0,
+   "off": 0
+  }
+ },
+ {
+  "scenario": "effort none/off via kwargs => no thinking, answer in content",
+  "ok": true,
+  "detail": {
+   "none": {
+    "reasoning": 0,
+    "content": "No, 391 is not prime because it is divis"
+   },
+   "off": {
+    "reasoning": 0,
+    "content": "No, 391 is not prime because it is divis"
+   }
+  }
+ },
+ {
+  "scenario": "top-level reasoning_effort none => answer in content",
+  "ok": true,
+  "detail": "HTTP 200 reasoning 0 content 'No, 391 is not prime because it is divis'"
+ },
+ {
+  "scenario": "top-level reasoning_effort field (OpenAI style) accepted",
+  "ok": true,
+  "detail": "HTTP 200, reasoning 315 chars"
+ },
+ {
+  "scenario": "enable_thinking=false => no thinking",
+  "ok": true,
+  "detail": "reasoning 0 chars, answer 'No, 391 is not prime because it is divis'"
+ },
+ {
+  "scenario": "inline tag <|think_off|> => no thinking, answer in content, tag stripped",
+  "ok": true,
+  "detail": "reasoning 0, content 'No', tag in prompt: False"
+ },
+ {
+  "scenario": "inline tag <|think_on|> + enable_thinking=false => thinking, reasoning separated from the answer",
+  "ok": true,
+  "detail": "HTTP 200 reasoning 879, content '\\n\\nNo.'"
+ },
+ {
+  "scenario": "inline tag <|think_on|> + reasoning_effort none => thinking, reasoning separated from the answer",
+  "ok": true,
+  "detail": "HTTP 200 reasoning 1217, content '\\n\\nNo. (391 = 17 \u00d7 23)'"
+ },
+ {
+  "scenario": "enable_thinking=\"false\" (string) => no thinking, answer in content",
+  "ok": true,
+  "detail": "HTTP 200 reasoning 0 content 'No, 391 is not prime because it is divis'"
+ },
+ {
+  "scenario": "control tokens in user text stay text (no injected turns)",
+  "ok": true,
+  "detail": "real <|im_start|> tokens: 3 (clean request: 3)"
+ },
+ {
+  "scenario": "single tool call",
+  "ok": true,
+  "detail": [
+   [
+    "read_file",
+    "{\"path\": \"src/app.py\"}"
+   ]
+  ]
+ },
+ {
+  "scenario": "parallel tool calls (2 cities)",
+  "ok": true,
+  "detail": [
+   [
+    "get_weather",
+    "{\"city\": \"Oslo\"}"
+   ],
+   [
+    "get_weather",
+    "{\"city\": \"Lima\"}"
+   ]
+  ]
+ },
+ {
+  "scenario": "irrelevance: no tool call for 2+2",
+  "ok": true,
+  "detail": "\n\n4"
+ },
+ {
+  "scenario": "round trip with STRINGIFIED arguments in history",
+  "ok": true,
+  "detail": "\n\nIt prints:\n\n```\nhello asgard\n```\n\nThe file contains a single line: `print('hel"
+ },
+ {
+  "scenario": "failure_notes off by default / on when asked",
+  "ok": true,
+  "detail": {
+   "off": false,
+   "on": true
+  }
+ },
+ {
+  "scenario": "max_tool_response_chars keeps head+tail",
+  "ok": true,
+  "detail": {
+   "full_chars": 35508,
+   "truncated_chars": 6509,
+   "answer_mentions_disk": true
+  }
+ },
+ {
+  "scenario": "history reasoning via reasoning -> one <think> block",
+  "ok": true,
+  "detail": "\n<think>\nR-MARK\n</think>\n\nYes.<|im_end|>\n<|im_start|>user\nq2"
+ },
+ {
+  "scenario": "history reasoning via reasoning_content -> one <think> block",
+  "ok": true,
+  "detail": "\n<think>\nR-MARK\n</think>\n\nYes.<|im_end|>\n<|im_start|>user\nq2"
+ },
+ {
+  "scenario": "history reasoning via thinking (string) -> one <think> block",
+  "ok": true,
+  "detail": "\n<think>\nR-MARK\n</think>\n\nYes.<|im_end|>\n<|im_start|>user\nq2"
+ },
+ {
+  "scenario": "history reasoning via inline <think> -> one <think> block",
+  "ok": true,
+  "detail": "\n<think>\nR-MARK\n</think>\n\nYes.<|im_end|>\n<|im_start|>user\nq2"
+ },
+ {
+  "scenario": "preserve_thinking=false drops earlier reasoning",
+  "ok": true,
+  "detail": "dropped"
+ },
+ {
+  "scenario": "developer role",
+  "ok": true,
+  "detail": "HTTP 200 \n\nOslo"
+ },
+ {
+  "scenario": "two system messages",
+  "ok": true,
+  "detail": "HTTP 200 \n\nOslo"
+ },
+ {
+  "scenario": "content parts (list)",
+  "ok": true,
+  "detail": "HTTP 200 \n\nOslo."
+ },
+ {
+  "scenario": "system message mid-conversation",
+  "ok": true,
+  "detail": "HTTP 200 \n\nOslo"
+ },
+ {
+  "scenario": "anthropic: tool_use",
+  "ok": true,
+  "detail": "HTTP 200 [('get_weather', {'city': 'Bergen'})]"
+ },
+ {
+  "scenario": "anthropic: tool_result round trip (thinking block in history)",
+  "ok": true,
+  "detail": "\n\nBergen: rain, 9 \u00b0C."
+ },
+ {
+  "scenario": "anthropic: tool_reference in tool_result (tool search) -> next call",
+  "ok": true,
+  "detail": "HTTP 200 [('get_weather', {'city': 'Bergen'})]"
+ },
+ {
+  "scenario": "multi-turn prefix reuse (reasoning sent back)",
+  "ok": true,
+  "detail": {
+   "turn1_s": 4.32,
+   "turn2_s": 0.82
+  }
+ }
+]

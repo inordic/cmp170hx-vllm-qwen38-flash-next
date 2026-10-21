@@ -1,0 +1,39 @@
+[firstbatch] conv 0 turn 1 first: prompt 8,509 TTFT 1.853s think 150 ch, finish stop, answer '757791' -> PASS
+[firstbatch] conv 1 turn 1 first: prompt 8,775 TTFT 2.931s think 126 ch, finish stop, answer '432130' -> PASS
+[firstbatch] conv 2 turn 1 first: prompt 8,957 TTFT 4.302s think 147 ch, finish stop, answer '412606' -> PASS
+[firstbatch] conv 4 turn 1 first: prompt 8,937 TTFT 7.134s think 134 ch, finish stop, answer '699737' -> PASS
+[firstbatch] conv 3 turn 1 first: prompt 9,022 TTFT 5.827s think 153 ch, finish stop, answer '652667' -> PASS
+[firstbatch] conv 6 turn 1 first: prompt 8,696 TTFT 9.753s think 103 ch, finish stop, answer '466582' -> PASS
+[firstbatch] conv 5 turn 1 first: prompt 7,735 TTFT 8.467s think 133 ch, finish stop, answer '558261' -> PASS
+[firstbatch] conv 8 turn 1 first: prompt 6,493 TTFT 12.091s think 133 ch, finish stop, answer '334877' -> PASS
+[firstbatch] conv 9 turn 1 first: prompt 6,681 TTFT 13.063s think 133 ch, finish stop, answer '892629' -> PASS
+[firstbatch] conv 7 turn 1 first: prompt 7,437 TTFT 11.141s think 176 ch, finish stop, answer '828369' -> PASS
+[firstbatch] conv 11 turn 1 first: prompt 7,666 TTFT 15.215s think 133 ch, finish stop, answer '168190' -> PASS
+[firstbatch] conv 10 turn 1 first: prompt 8,371 TTFT 14.556s think 133 ch, finish stop, answer '283113' -> PASS
+[firstbatch] conv 0 turn 2 hit: prompt 8,539 TTFT 0.164s think 118 ch, finish stop, answer '648926' -> PASS
+[firstbatch] conv 9 turn 2 hit: prompt 6,711 TTFT 0.403s think 106 ch, finish stop, answer '589192' -> PASS
+[firstbatch] conv 8 turn 2 hit: prompt 6,523 TTFT 0.403s think 118 ch, finish stop, answer '734247' -> PASS
+[firstbatch] conv 2 turn 2 hit: prompt 8,987 TTFT 0.378s think 151 ch, finish stop, answer '933317' -> PASS
+[firstbatch] conv 1 turn 2 hit: prompt 8,805 TTFT 0.378s think 150 ch, finish stop, answer '884817' -> PASS
+[firstbatch] conv 6 turn 2 hit: prompt 8,726 TTFT 0.378s think 146 ch, finish stop, answer '854389' -> PASS
+[firstbatch] conv 3 turn 2 hit: prompt 9,052 TTFT 0.378s think 147 ch, finish stop, answer '627253' -> PASS
+[firstbatch] conv 4 turn 2 hit: prompt 8,967 TTFT 0.378s think 163 ch, finish stop, answer '501640' -> PASS
+[firstbatch] conv 5 turn 2 hit: prompt 7,765 TTFT 0.378s think 142 ch, finish stop, answer '859564' -> PASS
+[firstbatch] conv 10 turn 2 hit: prompt 8,401 TTFT 0.454s think 158 ch, finish stop, answer '888200' -> PASS
+[firstbatch] conv 7 turn 2 hit: prompt 7,467 TTFT 0.404s think 156 ch, finish stop, answer '477289' -> PASS
+[firstbatch] conv 11 turn 2 hit: prompt 7,696 TTFT 0.496s think 165 ch, finish stop, answer '911330' -> PASS
+[firstbatch] conv 5 turn 3 hit: prompt 7,795 TTFT 0.325s think 103 ch, finish stop, answer '842265' -> PASS
+[firstbatch] conv 0 turn 3 hit: prompt 8,569 TTFT 0.326s think 102 ch, finish stop, answer '773451' -> PASS
+[firstbatch] conv 3 turn 3 hit: prompt 9,082 TTFT 0.325s think 102 ch, finish stop, answer '253340' -> PASS
+[firstbatch] conv 8 turn 3 hit: prompt 6,553 TTFT 0.484s think 106 ch, finish stop, answer '405219' -> PASS
+[firstbatch] conv 4 turn 3 hit: prompt 8,997 TTFT 0.325s think 104 ch, finish stop, answer '239619' -> PASS
+[firstbatch] conv 10 turn 3 hit: prompt 8,431 TTFT 0.347s think 104 ch, finish stop, answer '748442' -> PASS
+[firstbatch] conv 1 turn 3 hit: prompt 8,835 TTFT 0.144s think 136 ch, finish stop, answer '589389' -> PASS
+[firstbatch] conv 11 turn 3 hit: prompt 7,726 TTFT 0.483s think 109 ch, finish stop, answer '838495' -> PASS
+[firstbatch] conv 6 turn 3 hit: prompt 8,756 TTFT 0.348s think 130 ch, finish stop, answer '861343' -> PASS
+[firstbatch] conv 2 turn 3 hit: prompt 9,017 TTFT 0.325s think 151 ch, finish stop, answer '619932' -> PASS
+[firstbatch] conv 7 turn 3 hit: prompt 7,497 TTFT 0.484s think 130 ch, finish stop, answer '553932' -> PASS
+[firstbatch] conv 9 turn 3 hit: prompt 6,741 TTFT 0.484s think 177 ch, finish stop, answer '201599' -> PASS
+prefix cache: 194,272 of 292,917 queried tokens were hits
+server log during the run: K1 registrations 0, K1 CoW step lines 2 (pairs 8), stale rows before copy n/a (VLLM_K1_DEBUG off), KV partial-copy warnings 0, 'NOT copied' 0, errors 0
+K1 FIRSTBATCH ALL PASS

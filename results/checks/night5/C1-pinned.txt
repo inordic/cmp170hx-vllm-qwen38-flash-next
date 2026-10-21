@@ -1,0 +1,17 @@
+[pressure] pool 1,239,671 tokens -> 25 unique prompts x 72,000 tokens (1.45x pool), 20 at a time
+[pressure] conv 0 turn 1 first: prompt 18,735 TTFT 2.63s think 168 ch, finish stop, answer '843957' -> PASS
+[pressure] conv 1 turn 1 first: prompt 21,712 TTFT 2.748s think 133 ch, finish stop, answer '117360' -> PASS
+[pressure] conv 2 turn 1 first: prompt 18,460 TTFT 2.637s think 144 ch, finish stop, answer '975196' -> PASS
+[pressure] conv 3 turn 1 first: prompt 19,703 TTFT 2.858s think 185 ch, finish stop, answer '949210' -> PASS
+[pressure] conv 0 turn 2 during-flood: prompt 18,765 TTFT 175.355s think 152 ch, finish stop, answer '200590' -> PASS
+[pressure] conv 1 turn 2 during-flood: prompt 21,742 TTFT 31.97s think 107 ch, finish stop, answer '723724' -> PASS
+[pressure] conv 2 turn 2 during-flood: prompt 18,490 TTFT 2.494s think 125 ch, finish stop, answer '882296' -> PASS
+[pressure] conv 3 turn 2 during-flood: prompt 19,733 TTFT 2.742s think 146 ch, finish stop, answer '215369' -> PASS
+[pressure] conv 0 turn 3 after-flood: prompt 18,796 TTFT 0.169s think 136 ch, finish stop, answer '487825' -> PASS
+[pressure] conv 1 turn 3 after-flood: prompt 21,773 TTFT 0.181s think 138 ch, finish stop, answer '704155' -> PASS
+[pressure] conv 2 turn 3 after-flood: prompt 18,521 TTFT 0.159s think 113 ch, finish stop, answer '527856' -> PASS
+[pressure] conv 3 turn 3 after-flood: prompt 19,764 TTFT 0.162s think 118 ch, finish stop, answer '639157' -> PASS
+[pressure] peak KV usage 17.0%, preemptions +0
+prefix cache: 78,624 of 2,070,006 queried tokens were hits
+server log during the run: K1 registrations 0, K1 CoW step lines 2 (pairs 10), stale rows before copy n/a (VLLM_K1_DEBUG off), KV partial-copy warnings 0, 'NOT copied' 0, errors 0
+K1 PRESSURE ALL PASS

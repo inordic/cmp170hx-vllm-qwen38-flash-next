@@ -322,7 +322,7 @@ No official HumanEval/EvalPlus (post-trained), BFCL, IFEval, RULER or MMLU-Pro.
 
 **1. Copy from the Mac.** About 115 MB without the optional v5 tests. The container is an LXC (reachable over SSH):
 ```bash
-cd /private/tmp/claude-501/-Volumes-Storage-Development-ninfer-webui/78f63ba9-216b-434d-abe2-e01f6652864d/scratchpad/research-tonight
+cd /path/to/research-tonight   # the local directory that holds the harness as quality/
 rsync -a --exclude dl --exclude 'results*' --exclude data/lcb/tests_v5 quality/ root@<container>:/root/tune/quality/
 ```
 

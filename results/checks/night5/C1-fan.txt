@@ -1,0 +1,20 @@
+[fanout] conv 0 turn 1 first: prompt 26,186 TTFT 3.331s hit 0 (offset 0) think 152 ch, finish stop, answer '470723' -> PASS
+[fanout] conv 0 turn 2 user1: prompt 26,220 TTFT 0.322s think 76 ch, finish stop, answer '531864' -> PASS
+[fanout] conv 0 turn 2 user0: prompt 26,219 TTFT 0.187s think 114 ch, finish stop, answer '470723' -> PASS
+[fanout] conv 0 turn 2 user11: prompt 26,221 TTFT 0.846s think 82 ch, finish stop, answer '531864' -> PASS
+[fanout] conv 0 turn 2 user2: prompt 26,221 TTFT 0.369s think 159 ch, finish stop, answer '718806' -> PASS
+[fanout] conv 0 turn 2 user4: prompt 26,220 TTFT 0.508s think 144 ch, finish stop, answer '768250' -> PASS
+[fanout] conv 0 turn 2 user7: prompt 26,221 TTFT 0.68s think 129 ch, finish stop, answer '718806' -> PASS
+[fanout] conv 0 turn 2 user3: prompt 26,220 TTFT 0.508s think 151 ch, finish stop, answer '511158' -> PASS
+[fanout] conv 0 turn 2 user6: prompt 26,220 TTFT 0.62s think 146 ch, finish stop, answer '531864' -> PASS
+[fanout] conv 0 turn 2 user9: prompt 26,220 TTFT 0.725s think 141 ch, finish stop, answer '768250' -> PASS
+[fanout] conv 0 turn 2 user8: prompt 26,220 TTFT 0.678s think 151 ch, finish stop, answer '511158' -> PASS
+[fanout] conv 0 turn 2 user14: prompt 26,221 TTFT 0.887s think 121 ch, finish stop, answer '768250' -> PASS
+[fanout] conv 0 turn 2 user13: prompt 26,221 TTFT 0.945s think 123 ch, finish stop, answer '511158' -> PASS
+[fanout] conv 0 turn 2 user12: prompt 26,222 TTFT 0.845s think 187 ch, finish stop, answer '718806' -> PASS
+[fanout] conv 0 turn 2 user10: prompt 26,220 TTFT 0.789s think 185 ch, finish stop, answer '470723' -> PASS
+[fanout] conv 0 turn 2 user15: prompt 26,220 TTFT 0.99s think 166 ch, finish stop, answer '470723' -> PASS
+[fanout] conv 0 turn 2 user5: prompt 26,219 TTFT 0.553s think 257 ch, finish stop, answer '470723' -> PASS
+prefix cache: 418,560 of 445,711 queried tokens were hits
+server log during the run: K1 registrations 0, K1 CoW step lines 2 (pairs 8), stale rows before copy n/a (VLLM_K1_DEBUG off), KV partial-copy warnings 0, 'NOT copied' 0, errors 0
+K1 FANOUT ALL PASS

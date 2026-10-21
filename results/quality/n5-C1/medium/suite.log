@@ -1,0 +1,194 @@
+2026-10-20 21:30:09 === suite start TAG=n5-C1 MODEL=qwen3.8-flash-next EFFORT=medium C=16 endpoint=http://127.0.0.1:8008
+[sandbox] mode=nobody+netns python=/usr/bin/python3 base=/tmp/qeval-sbx-278133
+21:30:09 selftest evalplus canonical HumanEval/0: OK
+21:30:10 selftest evalplus canonical HumanEval/10: OK
+21:30:10 selftest evalplus canonical HumanEval/53: OK
+21:30:10 selftest evalplus canonical HumanEval/129: OK
+21:30:10 selftest evalplus canonical Mbpp/2: OK
+21:30:10 selftest evalplus canonical Mbpp/124: OK
+21:30:10 selftest evalplus canonical Mbpp/581: OK
+21:30:10 selftest evalplus canonical Mbpp/722: OK
+21:30:10 selftest evalplus wrong solution rejected: OK
+21:30:10 selftest lcb stdin ok: OK
+21:30:10 selftest lcb stdin input(): OK
+21:30:10 selftest lcb stdin wrong: OK
+21:30:12 selftest lcb stdin tle: OK
+21:30:12 selftest lcb call ok: OK
+21:30:12 selftest isolation probe (the output shows what sandboxed code could do): {"uid": 65534, "net": "blocked", "harness_dir_write": "blocked"}
+
+21:30:12 sandbox mode: nobody+netns python=/usr/bin/python3
+21:30:12 SELFTEST PASSED
+21:30:12 /v1/models -> 200: ['qwen3.8-flash-next', 'swift-1.5-awq', 'Qwen3.8-Flash-Next-AWQ-INT4', 'swift-1.5-iq3_xxs']
+21:30:13 effort=low: tokens=207 reasoning_chars=277 answer='17' err=None
+21:30:14 effort=medium: tokens=223 reasoning_chars=352 answer='17' err=None
+21:30:15 effort=high: tokens=186 reasoning_chars=298 answer='17' err=None
+21:30:16 tool call: [{'id': 'chatcmpl-tool-83a45841aefcf342', 'name': 'get_weather', 'arguments': '{"city": "Gothenburg", "unit": "c"}'}] finish=tool_calls err=None
+21:30:16 WARNING: low effort did not use fewer tokens than high - check that reasoning_effort reaches the template
+21:30:16 probe written to /root/qeval/results/probe-n5-C1-20261020-213016.json
+2026-10-20 21:30:16 --- bfcl (budget 60 min, 150 min left in suite)
+21:30:16 [bfcl] 1040 items x 3 repeats; 0 already done; 3120 to run; concurrency=16; budget=3600s
+21:30:31 [bfcl] 25/3120 done, acc so far 21/25, runaway 0, errors 0, 15s
+21:30:41 [bfcl] 50/3120 done, acc so far 39/50, runaway 0, errors 0, 25s
+21:30:54 [bfcl] 75/3120 done, acc so far 61/75, runaway 0, errors 0, 38s
+21:31:13 [bfcl] 100/3120 done, acc so far 83/100, runaway 0, errors 0, 57s
+21:31:34 [bfcl] 125/3120 done, acc so far 105/125, runaway 0, errors 0, 78s
+21:31:50 [bfcl] 150/3120 done, acc so far 125/150, runaway 0, errors 0, 94s
+21:32:15 [bfcl] 175/3120 done, acc so far 145/175, runaway 0, errors 0, 119s
+21:32:39 [bfcl] 200/3120 done, acc so far 163/200, runaway 0, errors 0, 143s
+21:33:17 [bfcl] 225/3120 done, acc so far 181/225, runaway 0, errors 0, 180s
+21:33:39 [bfcl] 250/3120 done, acc so far 200/250, runaway 0, errors 0, 203s
+21:34:02 [bfcl] 275/3120 done, acc so far 218/275, runaway 0, errors 0, 226s
+21:34:24 [bfcl] 300/3120 done, acc so far 239/300, runaway 0, errors 0, 248s
+21:34:41 [bfcl] 325/3120 done, acc so far 259/325, runaway 0, errors 0, 264s
+21:34:55 [bfcl] 350/3120 done, acc so far 279/350, runaway 0, errors 0, 278s
+21:35:09 [bfcl] 375/3120 done, acc so far 299/375, runaway 0, errors 0, 292s
+21:35:23 [bfcl] 400/3120 done, acc so far 317/400, runaway 0, errors 0, 307s
+21:35:41 [bfcl] 425/3120 done, acc so far 339/425, runaway 0, errors 0, 325s
+21:35:55 [bfcl] 450/3120 done, acc so far 360/450, runaway 0, errors 0, 339s
+21:36:09 [bfcl] 475/3120 done, acc so far 381/475, runaway 0, errors 0, 353s
+21:36:26 [bfcl] 500/3120 done, acc so far 401/500, runaway 0, errors 0, 370s
+21:36:46 [bfcl] 525/3120 done, acc so far 420/525, runaway 0, errors 0, 390s
+21:36:58 [bfcl] 550/3120 done, acc so far 444/550, runaway 0, errors 0, 402s
+21:37:14 [bfcl] 575/3120 done, acc so far 469/575, runaway 0, errors 0, 418s
+21:37:29 [bfcl] 600/3120 done, acc so far 491/600, runaway 0, errors 0, 433s
+21:37:46 [bfcl] 625/3120 done, acc so far 512/625, runaway 0, errors 0, 450s
+21:38:07 [bfcl] 650/3120 done, acc so far 530/650, runaway 0, errors 0, 470s
+21:38:28 [bfcl] 675/3120 done, acc so far 549/675, runaway 0, errors 0, 492s
+21:38:46 [bfcl] 700/3120 done, acc so far 571/700, runaway 0, errors 0, 510s
+21:38:59 [bfcl] 725/3120 done, acc so far 593/725, runaway 0, errors 0, 523s
+21:39:12 [bfcl] 750/3120 done, acc so far 615/750, runaway 0, errors 0, 536s
+21:39:32 [bfcl] 775/3120 done, acc so far 637/775, runaway 0, errors 0, 556s
+21:39:53 [bfcl] 800/3120 done, acc so far 660/800, runaway 0, errors 0, 577s
+21:40:14 [bfcl] 825/3120 done, acc so far 677/825, runaway 0, errors 0, 598s
+21:40:31 [bfcl] 850/3120 done, acc so far 697/850, runaway 0, errors 0, 615s
+21:40:47 [bfcl] 875/3120 done, acc so far 718/875, runaway 0, errors 0, 631s
+21:41:00 [bfcl] 900/3120 done, acc so far 739/900, runaway 0, errors 0, 643s
+21:41:23 [bfcl] 925/3120 done, acc so far 761/925, runaway 0, errors 0, 667s
+21:41:56 [bfcl] 950/3120 done, acc so far 784/950, runaway 0, errors 0, 699s
+21:42:14 [bfcl] 975/3120 done, acc so far 802/975, runaway 0, errors 0, 718s
+21:42:37 [bfcl] 1000/3120 done, acc so far 823/1000, runaway 0, errors 0, 740s
+21:43:00 [bfcl] 1025/3120 done, acc so far 844/1025, runaway 0, errors 0, 763s
+21:43:22 [bfcl] 1050/3120 done, acc so far 865/1050, runaway 0, errors 0, 786s
+21:43:36 [bfcl] 1075/3120 done, acc so far 885/1075, runaway 1, errors 0, 799s
+21:43:45 [bfcl] 1100/3120 done, acc so far 905/1100, runaway 1, errors 0, 809s
+21:43:59 [bfcl] 1125/3120 done, acc so far 926/1125, runaway 1, errors 0, 823s
+21:44:19 [bfcl] 1150/3120 done, acc so far 949/1150, runaway 1, errors 0, 843s
+21:44:38 [bfcl] 1175/3120 done, acc so far 967/1175, runaway 1, errors 0, 862s
+21:44:59 [bfcl] 1200/3120 done, acc so far 984/1200, runaway 1, errors 0, 883s
+21:45:25 [bfcl] 1225/3120 done, acc so far 1006/1225, runaway 1, errors 0, 909s
+21:46:00 [bfcl] 1250/3120 done, acc so far 1021/1250, runaway 1, errors 0, 944s
+21:46:27 [bfcl] 1275/3120 done, acc so far 1041/1275, runaway 1, errors 0, 970s
+21:46:53 [bfcl] 1300/3120 done, acc so far 1060/1300, runaway 1, errors 0, 996s
+21:47:14 [bfcl] 1325/3120 done, acc so far 1075/1325, runaway 1, errors 0, 1017s
+21:47:38 [bfcl] 1350/3120 done, acc so far 1096/1350, runaway 1, errors 0, 1041s
+21:47:53 [bfcl] 1375/3120 done, acc so far 1117/1375, runaway 1, errors 0, 1056s
+21:48:08 [bfcl] 1400/3120 done, acc so far 1137/1400, runaway 1, errors 0, 1072s
+21:48:23 [bfcl] 1425/3120 done, acc so far 1157/1425, runaway 1, errors 0, 1087s
+21:48:41 [bfcl] 1450/3120 done, acc so far 1176/1450, runaway 1, errors 0, 1104s
+21:48:57 [bfcl] 1475/3120 done, acc so far 1199/1475, runaway 1, errors 0, 1121s
+21:49:09 [bfcl] 1500/3120 done, acc so far 1219/1500, runaway 1, errors 0, 1133s
+21:49:27 [bfcl] 1525/3120 done, acc so far 1240/1525, runaway 1, errors 0, 1151s
+21:49:48 [bfcl] 1550/3120 done, acc so far 1259/1550, runaway 1, errors 0, 1172s
+21:50:01 [bfcl] 1575/3120 done, acc so far 1281/1575, runaway 1, errors 0, 1185s
+21:50:14 [bfcl] 1600/3120 done, acc so far 1304/1600, runaway 1, errors 0, 1198s
+21:50:30 [bfcl] 1625/3120 done, acc so far 1326/1625, runaway 1, errors 0, 1213s
+21:50:45 [bfcl] 1650/3120 done, acc so far 1346/1650, runaway 1, errors 0, 1229s
+21:51:10 [bfcl] 1675/3120 done, acc so far 1366/1675, runaway 1, errors 0, 1254s
+21:51:31 [bfcl] 1700/3120 done, acc so far 1385/1700, runaway 1, errors 0, 1275s
+21:51:53 [bfcl] 1725/3120 done, acc so far 1406/1725, runaway 1, errors 0, 1296s
+21:52:07 [bfcl] 1750/3120 done, acc so far 1425/1750, runaway 1, errors 0, 1311s
+21:52:19 [bfcl] 1775/3120 done, acc so far 1447/1775, runaway 1, errors 0, 1322s
+21:52:33 [bfcl] 1800/3120 done, acc so far 1469/1800, runaway 1, errors 0, 1336s
+21:52:56 [bfcl] 1825/3120 done, acc so far 1491/1825, runaway 1, errors 0, 1360s
+21:53:17 [bfcl] 1850/3120 done, acc so far 1511/1850, runaway 1, errors 0, 1380s
+21:53:36 [bfcl] 1875/3120 done, acc so far 1531/1875, runaway 1, errors 0, 1399s
+21:53:52 [bfcl] 1900/3120 done, acc so far 1552/1900, runaway 1, errors 0, 1416s
+21:54:04 [bfcl] 1925/3120 done, acc so far 1574/1925, runaway 1, errors 0, 1427s
+21:54:17 [bfcl] 1950/3120 done, acc so far 1596/1950, runaway 1, errors 0, 1441s
+21:54:45 [bfcl] 1975/3120 done, acc so far 1619/1975, runaway 1, errors 0, 1469s
+21:55:13 [bfcl] 2000/3120 done, acc so far 1639/2000, runaway 1, errors 0, 1497s
+21:55:34 [bfcl] 2025/3120 done, acc so far 1661/2025, runaway 1, errors 0, 1518s
+21:55:58 [bfcl] 2050/3120 done, acc so far 1685/2050, runaway 1, errors 0, 1542s
+21:56:19 [bfcl] 2075/3120 done, acc so far 1705/2075, runaway 1, errors 0, 1563s
+21:56:41 [bfcl] 2100/3120 done, acc so far 1726/2100, runaway 2, errors 0, 1584s
+21:56:52 [bfcl] 2125/3120 done, acc so far 1744/2125, runaway 2, errors 0, 1596s
+21:57:05 [bfcl] 2150/3120 done, acc so far 1766/2150, runaway 2, errors 0, 1609s
+21:57:19 [bfcl] 2175/3120 done, acc so far 1789/2175, runaway 2, errors 0, 1623s
+21:57:43 [bfcl] 2200/3120 done, acc so far 1810/2200, runaway 2, errors 0, 1646s
+21:57:57 [bfcl] 2225/3120 done, acc so far 1829/2225, runaway 2, errors 0, 1661s
+21:58:18 [bfcl] 2250/3120 done, acc so far 1848/2250, runaway 2, errors 0, 1682s
+21:58:40 [bfcl] 2275/3120 done, acc so far 1868/2275, runaway 2, errors 0, 1703s
+21:59:12 [bfcl] 2300/3120 done, acc so far 1883/2300, runaway 2, errors 0, 1735s
+21:59:38 [bfcl] 2325/3120 done, acc so far 1903/2325, runaway 2, errors 0, 1761s
+22:00:00 [bfcl] 2350/3120 done, acc so far 1923/2350, runaway 2, errors 0, 1784s
+22:00:21 [bfcl] 2375/3120 done, acc so far 1941/2375, runaway 2, errors 0, 1804s
+22:00:39 [bfcl] 2400/3120 done, acc so far 1961/2400, runaway 2, errors 0, 1822s
+22:00:51 [bfcl] 2425/3120 done, acc so far 1983/2425, runaway 2, errors 0, 1835s
+22:01:08 [bfcl] 2450/3120 done, acc so far 2001/2450, runaway 2, errors 0, 1851s
+22:01:20 [bfcl] 2475/3120 done, acc so far 2020/2475, runaway 2, errors 0, 1864s
+22:01:38 [bfcl] 2500/3120 done, acc so far 2040/2500, runaway 2, errors 0, 1882s
+22:01:50 [bfcl] 2525/3120 done, acc so far 2064/2525, runaway 2, errors 0, 1894s
+22:02:05 [bfcl] 2550/3120 done, acc so far 2083/2550, runaway 2, errors 0, 1909s
+22:02:22 [bfcl] 2575/3120 done, acc so far 2105/2575, runaway 2, errors 0, 1926s
+22:02:39 [bfcl] 2600/3120 done, acc so far 2121/2600, runaway 2, errors 0, 1943s
+22:02:57 [bfcl] 2625/3120 done, acc so far 2145/2625, runaway 2, errors 0, 1961s
+22:03:10 [bfcl] 2650/3120 done, acc so far 2167/2650, runaway 2, errors 0, 1973s
+22:03:24 [bfcl] 2675/3120 done, acc so far 2188/2675, runaway 2, errors 0, 1988s
+22:03:40 [bfcl] 2700/3120 done, acc so far 2210/2700, runaway 2, errors 0, 2004s
+22:04:04 [bfcl] 2725/3120 done, acc so far 2228/2725, runaway 2, errors 0, 2027s
+22:04:21 [bfcl] 2750/3120 done, acc so far 2246/2750, runaway 2, errors 0, 2045s
+22:04:40 [bfcl] 2775/3120 done, acc so far 2268/2775, runaway 2, errors 0, 2064s
+22:04:55 [bfcl] 2800/3120 done, acc so far 2289/2800, runaway 2, errors 0, 2079s
+22:05:09 [bfcl] 2825/3120 done, acc so far 2311/2825, runaway 2, errors 0, 2092s
+22:05:28 [bfcl] 2850/3120 done, acc so far 2334/2850, runaway 2, errors 0, 2111s
+22:05:48 [bfcl] 2875/3120 done, acc so far 2356/2875, runaway 2, errors 0, 2131s
+22:06:08 [bfcl] 2900/3120 done, acc so far 2376/2900, runaway 2, errors 0, 2152s
+22:06:25 [bfcl] 2925/3120 done, acc so far 2397/2925, runaway 2, errors 0, 2169s
+22:06:41 [bfcl] 2950/3120 done, acc so far 2418/2950, runaway 2, errors 0, 2184s
+22:06:53 [bfcl] 2975/3120 done, acc so far 2440/2975, runaway 2, errors 0, 2197s
+22:07:13 [bfcl] 3000/3120 done, acc so far 2463/3000, runaway 2, errors 0, 2217s
+22:07:36 [bfcl] 3025/3120 done, acc so far 2485/3025, runaway 2, errors 0, 2240s
+22:07:59 [bfcl] 3050/3120 done, acc so far 2505/3050, runaway 2, errors 0, 2262s
+22:08:23 [bfcl] 3075/3120 done, acc so far 2524/3075, runaway 2, errors 0, 2286s
+22:08:45 [bfcl] 3100/3120 done, acc so far 2546/3100, runaway 2, errors 0, 2309s
+22:09:18 [bfcl] 3120/3120 done, acc so far 2563/3120, runaway 3, errors 0, 2341s
+22:09:18 [bfcl] summary: {"n": 3120, "acc": 0.8215, "ci95": [0.8076, 0.8345], "runaway_rate": 0.001}
+2026-10-20 22:09:18 --- evalplus (budget 18 min, 111 min left in suite)
+22:09:18 [evalplus] 542 items x 1 repeats; 0 already done; 542 to run; concurrency=16; budget=1080s
+22:09:42 [evalplus] 25/542 done, acc so far 22/25, runaway 0, errors 0, 24s
+22:10:05 [evalplus] 50/542 done, acc so far 42/50, runaway 0, errors 0, 47s
+22:10:29 [evalplus] 75/542 done, acc so far 63/75, runaway 0, errors 0, 71s
+22:10:57 [evalplus] 100/542 done, acc so far 82/100, runaway 0, errors 0, 99s
+22:11:17 [evalplus] 125/542 done, acc so far 104/125, runaway 0, errors 0, 119s
+22:11:36 [evalplus] 150/542 done, acc so far 126/150, runaway 0, errors 0, 138s
+22:11:56 [evalplus] 175/542 done, acc so far 148/175, runaway 0, errors 0, 158s
+22:12:19 [evalplus] 200/542 done, acc so far 171/200, runaway 0, errors 0, 181s
+22:12:35 [evalplus] 225/542 done, acc so far 192/225, runaway 0, errors 0, 197s
+22:12:54 [evalplus] 250/542 done, acc so far 212/250, runaway 0, errors 0, 216s
+22:13:13 [evalplus] 275/542 done, acc so far 235/275, runaway 0, errors 0, 235s
+22:13:33 [evalplus] 300/542 done, acc so far 255/300, runaway 0, errors 0, 255s
+22:13:48 [evalplus] 325/542 done, acc so far 275/325, runaway 0, errors 0, 270s
+22:14:05 [evalplus] 350/542 done, acc so far 296/350, runaway 0, errors 0, 287s
+22:14:23 [evalplus] 375/542 done, acc so far 317/375, runaway 0, errors 0, 305s
+22:14:44 [evalplus] 400/542 done, acc so far 339/400, runaway 0, errors 0, 326s
+22:15:02 [evalplus] 425/542 done, acc so far 361/425, runaway 0, errors 0, 344s
+22:15:20 [evalplus] 450/542 done, acc so far 384/450, runaway 0, errors 0, 362s
+22:15:37 [evalplus] 475/542 done, acc so far 405/475, runaway 0, errors 0, 379s
+22:15:50 [evalplus] 500/542 done, acc so far 428/500, runaway 0, errors 0, 392s
+22:16:06 [evalplus] 525/542 done, acc so far 452/525, runaway 0, errors 0, 408s
+22:16:13 [evalplus] 542/542 done, acc so far 466/542, runaway 0, errors 0, 415s
+22:16:13 [evalplus] summary: {"n": 542, "acc": 0.8598, "ci95": [0.828, 0.8865], "runaway_rate": 0.0}
+2026-10-20 22:16:14 --- longctx (budget 20 min, 104 min left in suite)
+22:16:14 [longctx] 180 items x 1 repeats; 0 already done; 180 to run; concurrency=6; budget=1200s
+22:17:21 [longctx] 18/180 done, acc so far 18/18, runaway 0, errors 0, 68s
+22:18:11 [longctx] 36/180 done, acc so far 36/36, runaway 0, errors 0, 117s
+22:18:50 [longctx] 54/180 done, acc so far 54/54, runaway 0, errors 0, 157s
+22:19:24 [longctx] 72/180 done, acc so far 72/72, runaway 0, errors 0, 190s
+22:19:52 [longctx] 90/180 done, acc so far 90/90, runaway 0, errors 0, 219s
+22:20:23 [longctx] 108/180 done, acc so far 108/108, runaway 0, errors 0, 249s
+22:21:04 [longctx] 126/180 done, acc so far 126/126, runaway 0, errors 0, 291s
+22:21:38 [longctx] 144/180 done, acc so far 144/144, runaway 0, errors 0, 324s
+22:22:20 [longctx] 162/180 done, acc so far 162/162, runaway 0, errors 0, 367s
+22:22:55 [longctx] 180/180 done, acc so far 180/180, runaway 0, errors 0, 401s
+22:22:55 [longctx] summary: {"n": 180, "acc": 1.0, "ci95": [0.9791, 1.0], "runaway_rate": 0.0}
+2026-10-20 22:22:55 === suite done in 52 min; results in /root/qeval/results/n5-C1/medium

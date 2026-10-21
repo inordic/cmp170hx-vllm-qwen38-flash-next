@@ -8,3 +8,54 @@
 - 20:18:53 UTC [R] conc u16-1024 | n5-R-u16-1024 | u16-1024 | 16 users | 511.1 tok/s total | 309 req | TTFT med 0.43 s p95 0.79 s | tg/stream 34.6 | errors 0 |
 - 20:21:26 UTC [R] conc mixed | n5-R-mixed | mixed | 5 users | 168.2 tok/s total | 103 req | TTFT med 0.23 s p95 5.29 s | tg/stream 36.3 | errors 0 | agent TTFT med 4.96 s | chat TTFT med 0.21 s p95 2.25 s |
 - 21:13:10 UTC [n5-R] suite: bfcl n=3120 acc=0.8054 run=0.001;evalplus n=542 acc=0.8579 run=0.0018;longctx n=180 acc=0.95 run=0.0;
+- 21:17:03 UTC [C1] up (ready after 230 s); GPU KV cache size: 1,239,671 tokens
+- 21:17:21 UTC [C1-first] K1 FIRSTBATCH ALL PASS | 
+- 21:19:31 UTC [C1-mt] K1 MULTITURN ALL PASS | follow-up hits: 22 of 24 mid-block; offsets [0, 0, 32, 32, 64, 96, 96, 112, 112, 160, 160, 192, 192, 1616, 1632, 1632, 1648, 1680, 1680, 1680, 1712, 3152, 3152, 3168]; median follow-up TTFT 0.174 s 
+- 21:19:37 UTC [C1-fan] K1 FANOUT ALL PASS | 
+- 21:23:36 UTC [C1-pinned] K1 PRESSURE ALL PASS | [pressure] peak KV usage 17.0%, preemptions +0 
+- 21:24:00 UTC [C1-mt2] K1 MULTITURN ALL PASS | follow-up hits: 10 of 12 mid-block; offsets [0, 0, 32, 112, 112, 160, 1632, 1632, 1680, 3152, 3152, 3168]; median follow-up TTFT 0.176 s 
+- 21:24:00 UTC [C1] server log: K1 CoW steps 8, NOT copied 0, tracebacks 0; GPU mem 61878 MiB 53130 MiB 
+- 21:24:00 UTC [C1] all K1 checks passed (INT8 KV usable)
+- [C1] prefill 1K 3360 8K 6293 32K 7645 | decode-at-size 1K 147 8K 135 32K 142 | code 172.3 tok/s (accept 3.47) | edit off 264.3 / low 252.6 | func PASS | multiturn PASS
+- 22:22:55 UTC [n5-C1] suite: bfcl n=3120 acc=0.8215 run=0.001;evalplus n=542 acc=0.8598 run=0.0;longctx n=180 acc=1.0 run=0.0;
+- 22:26:42 UTC [C2] up (ready after 220 s); GPU KV cache size: 1,234,771 tokens
+- [C2] prefill 1K 3081 8K 5999 32K 8054 | decode-at-size 1K 144 8K 147 32K 153 | code 168.4 tok/s (accept 3.54) | edit off 264.0 / low 253.6 | func PASS | multiturn PASS
+- 22:33:21 UTC [C2] T1 rc=0 (PASS):  PASS: 21 parallel streams kept speculative decoding (baseline 2.68 tokens/step) 
+- 22:33:36 UTC [C2] T2 rc=0 (PASS):  24/24 trials OK; first token '!' in 0/24 (a high rate with top_p=1/top_k=-1 points at accepted placeholder drafts, i.e. C1 missing) 
+- 23:25:47 UTC [n5-C2] suite: bfcl n=3120 acc=0.8163 run=0.001;evalplus n=542 acc=0.8579 run=0.0;longctx n=180 acc=1.0 run=0.0;
+- 23:30:00 UTC [C3] up (ready after 246 s); GPU KV cache size: 1,234,771 tokens
+- [C3] prefill 1K 2887 8K 5827 32K 8076 | decode-at-size 1K 146 8K 142 32K 140 | code 178.6 tok/s (accept 3.65) | edit off 262.8 / low 254.5 | func PASS | multiturn PASS
+- 23:36:33 UTC [C3] T4 rc=0 (PASS):  72/72 answers correct 
+- 23:39:06 UTC [C3] conc u8-1024 | n5-C3-u8-1024 | u8-1024 | 8 users | 359.1 tok/s total | 218 req | TTFT med 0.43 s p95 0.72 s | tg/stream 49.7 | errors 0 |
+- 23:41:41 UTC [C3] conc u16-1024 | n5-C3-u16-1024 | u16-1024 | 16 users | 440.1 tok/s total | 270 req | TTFT med 0.47 s p95 0.97 s | tg/stream 30.9 | errors 0 |
+- 23:44:16 UTC [C3] conc mixed | n5-C3-mixed | mixed | 5 users | 161.6 tok/s total | 100 req | TTFT med 0.28 s p95 5.17 s | tg/stream 36.5 | errors 0 | agent TTFT med 4.61 s | chat TTFT med 0.28 s p95 1.83 s |
+- 00:32:01 UTC [n5-C3] suite: bfcl n=3120 acc=0.808 run=0.0013;evalplus n=542 acc=0.8561 run=0.0018;longctx n=180 acc=1.0 run=0.0;
+- 00:32:01 UTC decide: BFCL  EvalP  LongC  lat s   code  verdict
+- 00:32:01 UTC decide: R        80.5   85.8   95.0   7.56  191.1  reference
+- 00:32:01 UTC decide: C1       82.2   86.0  100.0   7.77  172.3  PASS
+- 00:32:01 UTC decide: C2       81.6   85.8  100.0   7.83  168.4  PASS
+- 00:32:01 UTC decide: C3       80.8   85.6  100.0   5.46  178.6  PASS
+- 00:32:01 UTC decide: PICK C3
+- 00:32:19 UTC [host] clocks: 00:32:17 reset: All done. 
+- 00:32:19 UTC test-only night: decide would pick C3; production stays on the standard (night-4) profile
+- 00:35:54 UTC production 8080: 200
+- 00:35:54 UTC DONE
+- 00:36:04 UTC [host] clocks: 00:36:02 reset: All done. 
+- 05:15:00 UTC fallback check: 8080 healthy, nothing to do
+- 06:00:00 UTC fallback check: 8080 healthy, nothing to do
+- 18:56:27 UTC [deploy] new production profile: venv=n4 model=/opt/vllm-qfn/models/swift15-a16 kv=int8_per_token_head tplkw=terse:true 
+- 19:00:18 UTC [deploy] 8080 healthy with C1T (GPU KV cache size: 838,024 tokens)
+- 19:00:31 UTC [deploy] prod_check: PROD ALL PASS
+- 19:01:42 UTC [deploy] func_check: FUNC ALL PASS
+- 19:01:55 UTC [deploy] multiturn: prefix cache: 217,536 of 272,579 queried tokens were hits (80%) MULTITURN ALL PASS 
+- 19:02:29 UTC [deploy] feature check on 8080: FEATURES: 29/29 pass; fails: 
+- 19:04:06 UTC [deploy] code decode on 8080: | N5-prod | decode tok/s median 174.6 (min 150.9, max 197.8) | mean acceptance length 3.61 | 8866 tokens |
+- 19:04:06 UTC [deploy] speed on 8080 (median, vs night 4 production): 4096: pp 4709 (95%) tg 137 (92%); 32768: pp 7893 (101%) tg 135 (87%)
+- 19:04:06 UTC [deploy] DEPLOYED C1T
+- 19:15:59 UTC [rollback] C1T -> night-4 standard
+- 19:19:55 UTC [rollback] 8080 200; GPU KV cache size: 838,024 tokens
+- 19:20:08 UTC [rollback] prod_check: PROD ALL PASS
+- 19:21:07 UTC [rollback] func_check: FUNC ALL PASS
+- 19:21:21 UTC [rollback] multiturn: MULTITURN ALL PASS
+- 19:22:10 UTC [rollback] code decode on 8080: | N5-rollback | decode tok/s median 194.7 (min 177.9, max 222.7) | mean acceptance length 3.59 | 9216 tokens |
+- 19:22:10 UTC [rollback] rollback done

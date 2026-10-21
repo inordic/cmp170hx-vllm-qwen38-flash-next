@@ -107,4 +107,26 @@ All on the deploy candidate's settings (int4 draft head, MTP 4, `--prefix-match-
 | `K8` speed | K1 | code decode 190.4 tok/s (acceptance 3.49) against 193.6 with BF16 KV; KV pool 1,433,217 tokens against 838,024 (+71%) |
 | `n4-K8` quality | | long context 98.3%, the same as the BF16 reference `n4-ref` |
 
-Not run: the fill sweep, the pinned 1.5x pool, fanout 16 and the BF16 control on the K1 tree (B0). The churn test peaked at **17% KV usage**, so eviction with a full pool is still untested.
+Not run in night 4: the fill sweep, the pinned 1.5x pool, fanout 16 and the BF16 control on the K1 tree (B0). The churn test peaked at 17% KV usage, so eviction with a full pool was left for night 5.
+
+## 7. Night 5 and production
+
+Night 5 ran the checks again on the candidate C1 (Swift-A16 + INT8 KV, the same drafting), clocks locked at 1440 MHz ([`../../results/checks/night5/`](../../results/checks/night5/), `C1-*`; profile [`C1.env`](../../results/profiles/night5/C1.env)):
+
+| Run | Result |
+|---|---|
+| `C1-first` (12 users) | all pass |
+| `C1-mt` (6 × 5, cold controls) | all pass; 22 of 24 follow-up hits mid-block; median follow-up TTFT 0.17 s |
+| `C1-fan` (16 users) | all pass |
+| `C1-pinned` (the pinned 1.5x pool) | all 12 answers correct. 25 unique 72,000-token prompts, 20 at a time, against a 1,239,671-token pool (1.45x). Only 78,624 of 2,070,006 queried tokens were cache hits, so cached prefixes were evicted and recomputed (TTFT 2.5–2.7 s for those turns) |
+| `C1-mt2` (after the flood) | all pass |
+
+**Server log during the K1 checks:** 8 copy-on-write steps, 0 skipped scale copies, 0 tracebacks.
+
+**The "peak KV usage 17%" line** in `C1-pinned.txt` counts only blocks held by running requests. Cached prefixes in free blocks do not count, so it stays low while the pool turns over.
+
+**Production.** INT8 KV served production for about a quarter of an hour on 2026-10-21, as part of the C1T build, with a 1,239,671-token pool. That build was rolled back because of its multi-turn tool-use results and its slower decode, not because of K1. INT8 KV is off again, so K1 is in the tree, tested correct, and inactive.
+
+**Next.** INT8 KV alone on the standard model, with BFCL three times including the multi-turn subset ([night-5 report](../../research/2026-10-21-night5-max-build.md)).
+
+The fill sweep and the BF16 control (B0) were still not run.

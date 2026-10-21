@@ -1,0 +1,5 @@
+=== KV cache dtype: int8_per_token_head (per-token-head modes need patch 16)
+(Worker_PP0_EP0 pid=314316) INFO 10-21 18:58:50 [model_runner.py:435] Model loading took 36.31 GiB memory and 100.669352 seconds
+(Worker_PP1_EP0 pid=314328) INFO 10-21 18:59:32 [model_runner.py:435] Model loading took 42.71 GiB memory and 142.168017 seconds
+(EngineCore pid=314296) INFO 10-21 18:59:55 [kv_cache_utils.py:2404] GPU KV cache size: 1,239,671 tokens, Maximum concurrency for 262,144 tokens per request: 4.73x
+(APIServer pid=314223) INFO 10-21 19:00:15 [entry.py:136] Starting vLLM server on http://0.0.0.0:8080
